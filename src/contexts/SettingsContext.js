@@ -61,7 +61,6 @@ const SettingsProvider = ({ children }) => {
   }, [isArabic]);
 
   // Mode
-
   const onToggleMode = () => {
     setSettings({
       ...settings,
