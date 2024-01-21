@@ -7,7 +7,6 @@ import { useTheme } from "@emotion/react";
 const GeneralApp = () => {
 
   const theme = useTheme();
-  console.log(theme)
 
   return (
     <Stack direction={'row'}>
