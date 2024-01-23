@@ -6,6 +6,26 @@ import React from "react";
 import { Link as RouterLink } from 'react-router-dom';
 
 
+
+
+const TextMsg = ({ el }) => {
+    const theme = useTheme();
+
+    return (
+        <Stack direction={'row'} justifyContent={el.incoming ? 'start' : 'end'} p={1}>
+
+            <Box sx={{ backgroundColor: el.outgoing ? '#5B96F7' : theme.palette.mode === 'light' ? '#eeeeee' : theme.palette.background.paper, borderRadius: '8px' }} width='max-content' p={1.5}>
+                <Typography variant="subtitle2" color={theme.palette.mode === 'light' ? theme.palette.common.dark : theme.palette.common.white} >
+                    {el.message}
+                </Typography>
+
+            </Box>
+
+        </Stack>
+    )
+}
+
+
 const TimeSeparation = ({ el }) => {
 
     return (
@@ -37,23 +57,6 @@ const ImgMessage = ({ el }) => {
                 </Stack>
             </Box >
         </Stack >
-    )
-}
-
-const TextMsg = ({ el }) => {
-    const theme = useTheme();
-
-    return (
-        <Stack direction={'row'} justifyContent={el.incoming ? 'start' : 'end'} p={1}>
-
-            <Box sx={{ backgroundColor: el.outgoing ? '#5B96F7' : theme.palette.mode === 'light' ? '#eeeeee' : theme.palette.background.paper, borderRadius: '8px' }} width='max-content' p={1.5}>
-                <Typography variant="subtitle2" color={theme.palette.mode === 'light' ? theme.palette.common.dark : theme.palette.common.white} >
-                    {el.message}
-                </Typography>
-
-            </Box>
-
-        </Stack>
     )
 }
 
@@ -94,14 +97,14 @@ const DocMsg = ({ el }) => {
                 <Stack direction={'row'} alignItems={'center'} spacing={2}>
 
                     <IconButton>
-                        <Image color={theme.palette.common.white} />
+                        <Image color={theme.palette.mode === 'light' ? theme.palette.common.dark : theme.palette.common.white} />
                     </IconButton>
                     <Typography variant="caption2" color={theme.palette.mode === 'light' ? theme.palette.common.dark : theme.palette.common.white}>
                         Abstac.png
                     </Typography>
 
                     <IconButton>
-                        <Download color={theme.palette.common.white} />
+                        <Download color={theme.palette.mode === 'light' ? theme.palette.common.dark : theme.palette.common.white} />
                     </IconButton>
                 </Stack>
 

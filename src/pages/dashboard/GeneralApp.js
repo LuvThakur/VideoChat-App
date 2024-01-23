@@ -12,7 +12,7 @@ const GeneralApp = () => {
     <Stack direction={'row'}>
       <Chats />
 
-      <Box sx={{ width: 'calc(100vw - 480px)', height: '100%', backgroundColor: theme.mode === 'light' ? 'black' : theme.palette.background.default }}>
+      <Box sx={{ width: 'calc(100vw - 480px)', height: '100%' }}>
 
         <Conversation />
       </Box>
@@ -23,3 +23,4 @@ const GeneralApp = () => {
 };
 
 export default GeneralApp;
+
