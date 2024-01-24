@@ -1,29 +1,89 @@
-import { useTheme } from "@emotion/react";
-
-import { Divider, Stack, Typography, Box, Link, IconButton } from "@mui/material";
-import { Download, Image } from "phosphor-react";
 import React from "react";
+import { Divider, Stack, Typography, Box, IconButton, Menu, Fade, useTheme } from "@mui/material";
+import { DotsThreeVertical, Download, Image } from "phosphor-react";
 import { Link as RouterLink } from 'react-router-dom';
+import { Message_options } from '../../data/index';
 
 
 
 
-const TextMsg = ({ el }) => {
+const MenuOptions = () => {
+
+
     const theme = useTheme();
 
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const handleClick = (event) => {
+        event.preventDefault();
+        setAnchorEl(event.currentTarget);
+    };
+    const open = Boolean(anchorEl);
+
+    const handleClose = () => {
+
+        setAnchorEl(null);
+    };
+
+
+
     return (
-        <Stack direction={'row'} justifyContent={el.incoming ? 'start' : 'end'} p={1}>
+        <>
 
-            <Box sx={{ backgroundColor: el.outgoing ? '#5B96F7' : theme.palette.mode === 'light' ? '#eeeeee' : theme.palette.background.paper, borderRadius: '8px' }} width='max-content' p={1.5}>
-                <Typography variant="subtitle2" color={theme.palette.mode === 'light' ? theme.palette.common.dark : theme.palette.common.white} >
-                    {el.message}
-                </Typography>
+            <DotsThreeVertical
+                id="fade-button"
+                aria-controls={open ? 'fade-menu' : undefined}
+                aria-haspopup="true"
+                aria-expanded={open ? 'true' : undefined}
 
-            </Box>
+                onClick={handleClick}
+                size={16} />
 
-        </Stack>
+
+            <Menu
+                id="fade-menu"
+                MenuListProps={{
+                    'aria-labelledby': 'fade-button',
+                }}
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+                TransitionComponent={Fade}
+            >
+
+                <Stack direction={'column'} >
+                    {
+                        Message_options.map((el, index) => {
+
+                            return (
+                                <Stack
+
+                                    key={index}
+                                    onClick={handleClose}
+                                    alignItems={'center'}
+                                    direction={'row'}
+
+
+                                    sx={{
+                                        padding: '8px 16px',
+                                        '&:hover': {
+                                            backgroundColor: theme.palette.mode === 'light' ? '#cacaca' : theme.palette.common.black,
+
+                                            boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+                                        }
+                                    }} >{el.title}
+
+                                </Stack>
+                            )
+                        })
+
+                    }
+                </Stack>
+
+
+            </Menu >
+        </>
     )
-}
+};
 
 
 const TimeSeparation = ({ el }) => {
@@ -41,6 +101,27 @@ const TimeSeparation = ({ el }) => {
 
 }
 
+const TextMsg = ({ el }) => {
+    const theme = useTheme();
+
+    return (
+        <Stack direction={'row'} justifyContent={el.incoming ? 'start' : 'end'} p={1}>
+
+            <Box sx={{ backgroundColor: el.outgoing ? '#5B96F7' : theme.palette.mode === 'light' ? '#eeeeee' : theme.palette.background.paper, borderRadius: '8px' }} width='max-content' p={1.5}>
+                <Typography variant="subtitle2" color={theme.palette.mode === 'light' ? theme.palette.common.dark : theme.palette.common.white} >
+                    {el.message}
+                </Typography>
+
+            </Box>
+
+            <MenuOptions />
+
+        </Stack>
+    )
+}
+
+
+
 const ImgMessage = ({ el }) => {
     const theme = useTheme();
 
@@ -56,6 +137,7 @@ const ImgMessage = ({ el }) => {
                     </Typography>
                 </Stack>
             </Box >
+            <MenuOptions />
         </Stack >
     )
 }
@@ -80,6 +162,7 @@ const ReplyMsg = ({ el }) => {
                     </Typography>
                 </Stack >
             </Box >
+            <MenuOptions />
         </Stack >
 
 
@@ -109,7 +192,7 @@ const DocMsg = ({ el }) => {
                 </Stack>
 
             </Box>
-
+            <MenuOptions />
         </Stack>
     )
 
@@ -145,6 +228,7 @@ const LinkMsg = ({ el }) => {
 
                 </Stack>
             </Box >
+            <MenuOptions />
         </Stack >
     )
 

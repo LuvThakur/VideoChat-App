@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTheme } from '@emotion/react';
 import { Stack, Box, IconButton, TextField, InputAdornment, Typography } from '@mui/material';
-import { Camera, File, Image, LinkSimple, Smiley, Sticker, TelegramLogo, User, image } from 'phosphor-react';
+import { Camera, File, Image, LinkSimple, Smiley, Sticker, TelegramLogo, User } from 'phosphor-react';
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 
@@ -10,16 +10,11 @@ export default function DasFooter() {
 
     const theme = useTheme();
 
-    console.log(theme);
 
     const [selectPicker, SetPicker] = useState(false);
     const [selectLink, SetLink] = useState(false);
 
 
-    const handleEmojiSelect = (emoji) => {
-        console.log(emoji);
-        SetPicker(false);
-    };
 
     const Options =
         [
@@ -54,7 +49,7 @@ export default function DasFooter() {
         const theme = useTheme();
 
         return (
-            <Stack direction={'column'} p={0.5}>
+            <Stack direction={'column'} >
                 {Options.map((element, index) => {
                     return (
                         <Stack
@@ -66,7 +61,7 @@ export default function DasFooter() {
                                 padding: '0 6px',
                                 '&:hover': {
                                     backgroundColor: theme.palette.mode === 'light' ? theme.palette.common.white : theme.palette.common.black,
-                                    borderRadius: '8px',
+                                    borderRadius: '5px',
                                     boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)'
                                 }
                             }}

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Avatar, Box, Divider, IconButton, Stack } from "@mui/material";
+import { Avatar, Box, Divider, IconButton, Stack, Menu, MenuItem } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import Logo from '../../assets/Images/logo.ico';
 import { Nav_Buttons } from "../../data";
@@ -7,16 +7,98 @@ import { Gear } from "phosphor-react";
 import { faker } from '@faker-js/faker';
 import useSettings from "../../hooks/useSettings";
 import AntSwitch from "../../components/AntSwitch";
+import { Profile_Menu } from "../../data";
+
+
+const ProfileOptions = ({ handleClick, anchorEl }) => {
+
+
+    const open = Boolean(anchorEl);
+
+    const handleClose = () => {
+
+        handleClick();
+    };
+    return (
+        <>
+            <Menu
+                id="basic-menu"
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                MenuListProps={{
+                    'aria-labelledby': 'basic-button',
+                }}
+
+
+                anchorOrigin={{
+
+                    vertical: 'top',
+                    horizontal: 'right'
+
+                }}
+
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left'
+                }}
+
+            >
+
+                <Stack direction={'column'} >
+                    {
+                        Profile_Menu.map((el, index) => {
+
+                            return (
+
+                                <MenuItem onClick={handleClose} key={index}>
+
+                                    <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+
+                                        <IconButton>
+                                            {el.icon}
+                                        </IconButton>
+
+                                        {el.title}
+
+                                    </Stack>
+
+                                </MenuItem>
+                            )
+                        })
+
+                    }
+                </Stack>
+
+
+            </Menu >
+        </>
+
+    )
+}
+
 export default function Sidebar() {
 
     const theme = useTheme();
 
     const [selected, setSselected] = useState(null);
 
+    const [anchorEl, setAnchorEl] = useState(null); // Added state for ProfileOptions modal
+    const [profile, setProfile] = useState(false);
 
     const { onToggleMode } = useSettings();
 
 
+    const handleProfile = (event) => {
+        event.preventDefault();
+        setAnchorEl(event.currentTarget); // Set anchorEl for ProfileOptions modal
+        setProfile(true);
+    };
+
+    const handleCloseProfileOptions = () => {
+        setAnchorEl(null);
+        setProfile(false);
+    };
     return (
         <Box sx={{
             backgroundColor: theme.palette.background.default,
@@ -103,7 +185,10 @@ export default function Sidebar() {
                             onToggleMode();
                         }} />
 
-                    <Avatar src={faker.image.avatar()} />
+                    <Avatar src={faker.image.avatar()} onClick={handleProfile} />
+
+                    {profile && <ProfileOptions handleClick={handleCloseProfileOptions} anchorEl={anchorEl} />}
+
                 </Stack>
 
             </Stack>
