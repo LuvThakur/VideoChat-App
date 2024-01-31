@@ -2,21 +2,28 @@ import React from "react";
 import Chats from "./Chats";
 import { Stack, Box } from "@mui/material";
 import Conversation from "../../components/Conversation";
-import { useTheme } from "@emotion/react";
+import Contact from "./Contact";
+import { useSelector } from "react-redux";
+
 
 const GeneralApp = () => {
 
-  const theme = useTheme();
+
+  // const selector = useSelector(state => state.appe.sidebar);
+
+  const sidebar = useSelector(state => state.appe.sidebar);
 
   return (
-    <Stack direction={'row'}>
+    <Stack direction={'row'} width={'100%'}>
       <Chats />
 
-      <Box sx={{ width: 'calc(100vw - 480px)', height: '100%' }}>
+      <Box sx={{ width: sidebar.isopen ? 'calc(100vw - 750px)' : 'calc(100vw - 450px)', height: '100%' }}>
 
         <Conversation />
       </Box>
-
+      {sidebar.isopen &&
+        <Contact />
+      }
     </Stack >
 
   );

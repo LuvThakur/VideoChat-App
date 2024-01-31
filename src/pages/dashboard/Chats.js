@@ -144,7 +144,7 @@ const Chats = () => {
                 position: 'relative',
                 backgroundColor: theme.palette.mode === 'light' ? '#F8FAFF' : theme.palette.background.paper,
                 boxShadow: '0px 0px 2px rgba(0, 0, 0, 0.25)',
-                width: '350px',
+                width: '320px',
                 height: '100vh',
 
             }}

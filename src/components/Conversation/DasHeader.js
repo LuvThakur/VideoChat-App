@@ -3,13 +3,16 @@ import { Stack, Box, styled, Badge, Avatar, Typography, IconButton, Divider } fr
 import { useTheme } from '@emotion/react';
 import { CaretDown, MagnifyingGlass, Phone, VideoCamera } from 'phosphor-react';
 import { faker } from '@faker-js/faker';
+import { useDispatch } from 'react-redux';
+
+import { ToggleSidebarfun } from '../../Redux/Slice/SidebarSlice'; // Correct import
 
 
 
 export default function DasHeader() {
 
     const theme = useTheme();
-
+    const dispatch = useDispatch();
 
 
     const StyledBadge = styled(Badge)(({ theme }) => ({
@@ -35,8 +38,8 @@ export default function DasHeader() {
 
             <Stack direction="row" alignItems="center" justifyContent="space-between" width="100%" height="100%" p={1}>
 
-                <Stack direction="row" alignItems="center" >
-                    <Stack direction="row" spacing={2}>
+                <Stack direction="row" alignItems="center" onClick={() => { dispatch(ToggleSidebarfun()) }}>
+                    <Stack direction="row" spacing={2} >
                         <StyledBadge overlap="circular" anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} variant="dot">
                             <Avatar alt="Image Not Load" src={faker.image.avatar()} />
                         </StyledBadge>
