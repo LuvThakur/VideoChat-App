@@ -14,7 +14,7 @@ const GeneralApp = () => {
   const sidebar = useSelector(state => state.appe.sidebar);
 
   return (
-    <Stack direction={'row'} width={'100%'}>
+    <Stack direction={'row'} >
       <Chats />
 
       <Box sx={{ width: sidebar.isopen ? 'calc(100vw - 750px)' : 'calc(100vw - 450px)', height: '100%' }}>

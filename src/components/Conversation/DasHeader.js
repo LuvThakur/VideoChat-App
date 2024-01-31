@@ -34,7 +34,7 @@ export default function DasHeader() {
     }));
 
     return (
-        <Box sx={{ height: '90px', backgroundColor: theme.mode === 'light' ? 'dark' : theme.palette.background.default, boxShadow: '0px 0px 2px rgba(0,0,0,0.25)' }} width="100%" p={1}>
+        <Box sx={{  backgroundColor: theme.mode === 'light' ? 'dark' : theme.palette.background.default, boxShadow: '0px 0px 2px rgba(0,0,0,0.25)' }} width="100%" p={1}>
 
             <Stack direction="row" alignItems="center" justifyContent="space-between" width="100%" height="100%" p={1}>
 
