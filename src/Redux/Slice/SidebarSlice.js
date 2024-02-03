@@ -4,8 +4,8 @@ import {dispatch} from '../Store';
 
 const initialState = {
     sidebar: {
-        isopen: false,
-        type: 'Contact' // type can be varied 
+        isOpen: false,
+        type:'Contact' // type can be varied 
     }
 };
 
@@ -16,11 +16,12 @@ const SidebarSlice = createSlice({
     reducers: {
         //  action-creators
         toggleSidebar: (state) => {
-            state.sidebar.isopen = !state.sidebar.isopen;
+            state.sidebar.isOpen = !state.sidebar.isOpen;
         },
 
         typeSidebar: (state, action) => {
-            state.sidebar.type = action.payload.type;
+
+            state.sidebar.type = action.payload;
         }
     }
 });

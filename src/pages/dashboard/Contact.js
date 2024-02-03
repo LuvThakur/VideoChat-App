@@ -3,8 +3,8 @@ import { Avatar, Box, IconButton, Stack, Typography, Badge, styled, Divider, But
 import { CaretRight, Phone, Star, VideoCamera, XCircle, Bell, Prohibit, Trash } from 'phosphor-react';
 import { useTheme } from '@emotion/react';
 import { faker } from '@faker-js/faker';
-import { useDispatch} from 'react-redux';
-import { ToggleSidebarfun } from '../../Redux/Slice/SidebarSlice';
+import { useDispatch } from 'react-redux';
+import { ToggleSidebarfun, TypeSidebarfun } from '../../Redux/Slice/SidebarSlice';
 import AntSwitch from '../../components/AntSwitch';
 
 function Contact() {
@@ -35,7 +35,7 @@ function Contact() {
 
             <Stack height="100%" >
 
-                <Box height="100%" sx={{ width: '100%', backgroundColor: theme.mode === 'light' ? 'dark' : theme.palette.background.default, boxShadow: '0px 0px 2px rgba(0,0,0,0.25)' }} p={1}>
+                <Box sx={{ width: '100%',  boxShadow: '0px 0px 2px rgba(0,0,0,0.25)' }} p={1}>
                     <Stack direction={'row'} alignItems='center' spacing={2} p={1}>
                         <IconButton onClick={() => { dispatch(ToggleSidebarfun()) }}>
                             <XCircle size={24} />
@@ -82,7 +82,7 @@ function Contact() {
                 </Stack>
                 <Divider />
 
-                <Stack height="100%" direction='column' justifyContent='center' p={1}>
+                <Stack  direction='column' justifyContent='center' p={1}>
                     <Typography variant='subtitle2'>
                         About
                     </Typography>
@@ -94,18 +94,18 @@ function Contact() {
 
                 <Divider />
 
-                <Stack height="100%" direction='column' justifyContent='center' p={1}>
+                <Stack height="100%" direction='column' justifyContent='space-evenly' p={1}>
                     <Stack direction='row' alignItems='center' justifyContent='space-between' >
                         <Typography variant='subtitle2'>
                             Media, links and docs
                         </Typography>
 
-                        <Button endIcon={<CaretRight />}>
+                        <Button endIcon={<CaretRight />} >
                             201
                         </Button>
                     </Stack>
 
-                    <Stack direction='row' alignItems='center' justifyContent='space-evenly' p={2} spacing={2} >
+                    <Stack direction='row' alignItems='center' justifyContent='space-evenly' p={1} spacing={2} >
 
                         {
                             [1, 2, 3].map((el) => (
@@ -121,8 +121,9 @@ function Contact() {
                 </Stack>
 
                 <Divider />
-                <Stack height="100%" direction='row' alignItems='center' justifyContent='space-between' p={1}>
-                    <Stack direction='row' alignItems='center' justifyContent='space-between' p={1}>
+
+                <Stack  direction='row' alignItems='center' justifyContent='space-between' p={1}>
+                    <Stack direction='row' alignItems='center' justifyContent='space-between' >
 
                         <IconButton>
                             <Star size={16} />
@@ -132,15 +133,15 @@ function Contact() {
                         </Typography>
                     </Stack>
 
-                    <IconButton>
+                    <IconButton onClick={() => { dispatch(TypeSidebarfun("Starred")) }}>
                         <CaretRight size={16} />
                     </IconButton>
                 </Stack>
 
                 <Divider />
 
-                <Stack height="100%" direction='row' alignItems='center' justifyContent='space-between' p={1}>
-                    <Stack direction='row' alignItems='center' justifyContent='space-between' p={1}>
+                <Stack  direction='row' alignItems='center' justifyContent='space-between' p={1}>
+                    <Stack direction='row' alignItems='center' justifyContent='space-between' >
                         <IconButton>
                             <Bell />
                         </IconButton>

@@ -4,6 +4,7 @@ import { Stack, Box } from "@mui/material";
 import Conversation from "../../components/Conversation";
 import Contact from "./Contact";
 import { useSelector } from "react-redux";
+import SharredMessage from "../../components/SharredMessage";
 
 
 const GeneralApp = () => {
@@ -17,13 +18,20 @@ const GeneralApp = () => {
     <Stack direction={'row'} >
       <Chats />
 
-      <Box sx={{ width: sidebar.isopen ? 'calc(100vw - 750px)' : 'calc(100vw - 450px)', height: '100%' }}>
+      <Box sx={{ width: sidebar.isOpen ? 'calc(100vw - 750px)' : 'calc(100vw - 450px)', height: '100%' }}>
 
         <Conversation />
       </Box>
-      {sidebar.isopen &&
-        <Contact />
-      }
+      {sidebar.isOpen && (() => {
+        switch (sidebar.type) {
+          case 'Contact':
+            return <Contact />;
+          case 'Starred':
+            return <SharredMessage />;
+          default:
+            return null;
+        }
+      })()}
     </Stack >
 
   );
@@ -31,3 +39,17 @@ const GeneralApp = () => {
 
 export default GeneralApp;
 
+/*
+
+(() => {
+        switch (sidebar.type) {
+          case 'Contact':
+            return <Contact />;
+          case 'Sharred':
+            return <SharredMessage />;
+          default:
+            break;
+        }
+      })()
+
+*/
