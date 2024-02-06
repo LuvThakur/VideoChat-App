@@ -101,20 +101,20 @@ const TimeSeparation = ({ el }) => {
 
 }
 
-const TextMsg = ({ el }) => {
+const TextMsg = ({ el, menu }) => {
     const theme = useTheme();
 
     return (
         <Stack direction={'row'} justifyContent={el.incoming ? 'start' : 'end'} p={1}>
 
-            <Box sx={{ backgroundColor: el.outgoing ? '#5B96F7' : theme.palette.mode === 'light' ? '#eeeeee' : theme.palette.background.paper, borderRadius: '8px' }} width='max-content' p={1.5}>
+            <Box sx={{ backgroundColor: el.outgoing ? '#5B96F7' : theme.palette.mode === 'light' ? '#eeeeee' : theme.palette.background.paper, borderRadius: '8px' }} width='auto' p={1.5}>
                 <Typography variant="subtitle2" color={theme.palette.mode === 'light' ? theme.palette.common.dark : theme.palette.common.white} >
                     {el.message}
                 </Typography>
 
             </Box>
 
-            <MenuOptions />
+            {menu && <MenuOptions />}
 
         </Stack>
     )
@@ -170,7 +170,7 @@ const ReplyMsg = ({ el }) => {
 
 }
 
-const DocMsg = ({ el }) => {
+const DocMsg = ({ el, menu }) => {
 
     const theme = useTheme();
 
@@ -192,13 +192,13 @@ const DocMsg = ({ el }) => {
                 </Stack>
 
             </Box>
-            <MenuOptions />
+            {menu && <MenuOptions />}
         </Stack>
     )
 
 }
 
-const LinkMsg = ({ el }) => {
+const LinkMsg = ({ el, menu }) => {
 
     const theme = useTheme();
 
@@ -228,10 +228,12 @@ const LinkMsg = ({ el }) => {
 
                 </Stack>
             </Box >
-            <MenuOptions />
+            {menu && <MenuOptions />}
         </Stack >
     )
 
 }
+
+
 
 export { TimeSeparation, TextMsg, ImgMessage, ReplyMsg, LinkMsg, DocMsg }

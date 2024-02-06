@@ -5,6 +5,7 @@ import Conversation from "../../components/Conversation";
 import Contact from "./Contact";
 import { useSelector } from "react-redux";
 import SharredMessage from "../../components/SharredMessage";
+import StarredMessage from "../../components/StarredMessage";
 
 
 const GeneralApp = () => {
@@ -26,8 +27,13 @@ const GeneralApp = () => {
         switch (sidebar.type) {
           case 'Contact':
             return <Contact />;
-          case 'Starred':
+
+          case 'Share':
             return <SharredMessage />;
+
+          case 'Starred':
+            return <StarredMessage />
+            
           default:
             return null;
         }
@@ -38,18 +44,3 @@ const GeneralApp = () => {
 };
 
 export default GeneralApp;
-
-/*
-
-(() => {
-        switch (sidebar.type) {
-          case 'Contact':
-            return <Contact />;
-          case 'Sharred':
-            return <SharredMessage />;
-          default:
-            break;
-        }
-      })()
-
-*/

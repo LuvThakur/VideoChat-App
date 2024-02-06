@@ -342,6 +342,84 @@ const Share_Doc = [
 
 ];
 
+const Starred_Doc = [
+
+  {
+    type: "msg",
+    message: "Hi 👋🏻, How are ya ?",
+    incoming: true,
+    outgoing: false,
+  },
+  
+  {
+    type: "msg",
+    message: "Hi 👋 Panda, not bad, u ?",
+    incoming: false,
+    outgoing: true,
+  },
+  {
+    type: "msg",
+    message: "Can you send me an abstarct image? Can you send me an abstarct image? Can you send me an abstarct image? ",
+    incoming: false,
+    outgoing: true,
+  },
+  {
+    type: "msg",
+    message: "Ya sure, sending you a pic",
+    incoming: true,
+    outgoing: false,
+  },
+
+  {
+    type: "msg",
+    subtype: "img",
+    message: "Here You Go",
+    img: faker.image.abstract(),
+    incoming: true,
+    outgoing: false,
+  },
+  {
+    type: "msg",
+    message: "Can you please send this in file format?",
+    incoming: false,
+    outgoing: true,
+  },
+  
+  {
+    type: "msg",
+    message: "Hi 👋 Panda, not bad, u ?",
+    incoming: false,
+    outgoing: true,
+  },
+  {
+    type: "msg",
+    message: "Can you send me an abstarct image? Can you send me an abstarct image? Can you send me an abstarct image? ",
+    incoming: false,
+    outgoing: true,
+  },
+  {
+    type: "msg",
+    message: "Ya sure, sending you a pic",
+    incoming: true,
+    outgoing: false,
+  },
+
+  {
+    type: "msg",
+    subtype: "img",
+    message: "Here You Go",
+    img: faker.image.abstract(),
+    incoming: true,
+    outgoing: false,
+  },
+  {
+    type: "msg",
+    message: "Can you please send this in file format?",
+    incoming: false,
+    outgoing: true,
+  },
+];
+
 export {
   Profile_Menu,
   Nav_Setting,
@@ -351,4 +429,5 @@ export {
   Message_options,
   Share_Link,
   Share_Doc,
+  Starred_Doc
 };  

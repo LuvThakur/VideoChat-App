@@ -34,7 +34,7 @@ export default function SharredMessage() {
                         <ArrowFatLeft />
                     </IconButton>
                     <Typography variant="subtitle" >
-                        Starred Messages
+                        Sharred Messages
                     </Typography>
 
                 </Stack>
@@ -50,7 +50,7 @@ export default function SharredMessage() {
                     02 Feb 2024
                 </Typography>
 
-                <Stack direction="column" sx={{ flexGrow: 1, overflowY: 'auto', height: '100%' }}  >
+                <Stack direction="column" sx={{ flexGrow: 1, overflowY: 'auto', height: '100%' }}   p={1}>
                     {
                         (() => {
                             switch (value) {
@@ -80,7 +80,7 @@ export default function SharredMessage() {
                                     return (
 
                                         Share_Link.map((element, idx) => (
-                                            <LinkMsg el={element} key={idx} />
+                                            <LinkMsg el={element} key={idx} menu={false} />
                                         ))
 
                                     );
@@ -88,7 +88,7 @@ export default function SharredMessage() {
                                 case 2:
                                     return (
                                         Share_Doc.map((element, idx) => (
-                                            <DocMsg key={idx} el={element} />
+                                            <DocMsg key={idx} el={element} menu={false} />
                                         ))
                                     );
                                 default:

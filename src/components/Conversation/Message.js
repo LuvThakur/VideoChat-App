@@ -20,13 +20,13 @@ export default function Message() {
                             case 'img':
                                 return <ImgMessage key={index} el={element} />;
                             case 'link':
-                                return <LinkMsg key={index} el={element} />;
+                                return <LinkMsg key={index} el={element} menu={true} />;
                             case 'doc':
-                                return <DocMsg key={index} el={element} />;
+                                return <DocMsg key={index} el={element} menu={true} />;
                             case 'reply':
                                 return <ReplyMsg key={index} el={element} />;
                             default:
-                                return <TextMsg key={index} el={element} />;
+                                return <TextMsg key={index} el={element} menu={true} />;
                         }
 
                     default:
