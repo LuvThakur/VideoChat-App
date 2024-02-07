@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dialog, DialogActions, DialogContent, DialogTitle, Button, DialogContentText } from '@mui/material';
+import { RadioGroup, FormControlLabel, Dialog, DialogActions, DialogContent, DialogTitle, Button, Radio } from '@mui/material';
 
 const ThemeDailog = ({ open, handleClose }) => {
 
@@ -18,19 +18,27 @@ const ThemeDailog = ({ open, handleClose }) => {
             onClose={handleClose}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
+            PaperProps={{ style: { maxWidth: 'max-content', padding: '0px 90px 0px 0px' } }}
+
         >
             <DialogTitle id="alert-dialog-title">
-                {"Are you sure you want to block this account?"}
+                {"Choose Theme mode "}
             </DialogTitle>
             <DialogContent>
-                <DialogContentText id="alert-dialog-description">
-                    Click "Yes" to block.
-                </DialogContentText>
+                <RadioGroup
+                    aria-labelledby="demo-radio-buttons-group-label"
+                    defaultValue="Dark"
+                    name="radio-buttons-group"
+                >
+                    <FormControlLabel value="Dark" control={<Radio />} label="Dark" />
+                    <FormControlLabel value="Light" control={<Radio />} label="Light" />
+                    <FormControlLabel value="System Default" control={<Radio />} label="System Default" />
+                </RadioGroup>
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleCancel}>Cancel</Button>
-                <Button onClick={handleYes} autoFocus>
-                    Yes
+                <Button onClick={handleYes} >
+                    Apply
                 </Button>
             </DialogActions>
         </Dialog>

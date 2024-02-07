@@ -3,18 +3,29 @@ import { faker } from '@faker-js/faker'
 import { Stack, Box, IconButton, Typography, Avatar, Divider } from '@mui/material'
 import { Bell, CaretLeft, Info, Key, Keyboard, Lock, Image, Note, PencilCircle } from 'phosphor-react'
 import ThemeDailog from '../../Sections/SettingComponent/ThemeDailog';
+import { useTheme } from '@emotion/react';
+import Shortcut from '../../Sections/SettingComponent/Shortcut';
 
 
 
 export default function Setting() {
 
+    const theme = useTheme();
 
     const [openblock, setopenblock] = useState(false);
+    const [openShortcut, setopenShortcut] = useState(false);
+
+    const handleopenShortcut = () => {
+        setopenShortcut(true);
+    }
+    const handlecloseShortcut = () => {
+        setopenShortcut(false);
+    }
 
     const handleopenblk = () => {
         setopenblock(true);
     }
-    
+
     const handlecloseblk = () => {
         setopenblock(false);
     }
@@ -62,7 +73,7 @@ export default function Setting() {
             key: 6,
             icon: <Keyboard size={20} />,
             title: "Keyboard Shortcuts",
-            onclick: () => { }
+            onclick: handleopenShortcut
         },
         {
             key: 7,
@@ -76,7 +87,7 @@ export default function Setting() {
     return (
         <Stack direction={'row'} width={'100%'}>
 
-            <Box width={'320px'} height={'100vh'} sx={{ background: '#f8faff', boxShadow: '0 0 2px rgba(0,0,0,.25)' }}>
+            <Box width={'320px'} height={'100vh'} sx={{ backgroundColor: theme.palette.mode === 'light' ? '#F8FAFF' : theme.palette.background.paper, boxShadow: '0 0 2px rgba(0,0,0,.25)' }}>
 
                 <Stack direction={'column'} width={'100%'} p={4} spacing={5}>
 
@@ -130,6 +141,7 @@ export default function Setting() {
                 </Stack>
             </Box>
             {openblock && <ThemeDailog open={openblock} handleClose={handlecloseblk} />}
+            {openShortcut && <Shortcut open={openShortcut} handleClose={handlecloseShortcut} />}
         </Stack>
     )
 }
