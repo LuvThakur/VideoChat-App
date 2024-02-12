@@ -7,6 +7,7 @@ import DashboardLayout from "../layouts/dashboard";
 // config
 import { DEFAULT_PATH } from "../config";
 import LoadingScreen from "../components/LoadingScreen";
+import MainLayout from "../layouts/main";
 
 const Loadable = (Component) => (props) => {
   return (
@@ -18,6 +19,17 @@ const Loadable = (Component) => (props) => {
 
 export default function Router() {
   return useRoutes([
+    {
+      path: '/auth',
+      element: <MainLayout/>, // now we don't have an layout thats why i use an empty 
+      children: [
+        {
+          path: "login", element: <Login />,
+
+        }
+      ]
+    }
+    ,
     {
       path: "/",
       element: <DashboardLayout />,
@@ -36,6 +48,11 @@ export default function Router() {
 const GeneralApp = Loadable(
   lazy(() => import("../pages/dashboard/GeneralApp")),
 );
+
+
+const Login = Loadable(
+  lazy(() => import("../pages/auth/Login"))
+)
 
 const Setting = Loadable(
   lazy(() => import("../pages/dashboard/Setting")),
