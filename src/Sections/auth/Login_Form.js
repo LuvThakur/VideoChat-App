@@ -31,7 +31,7 @@ const Login_Form = () => {
     defaultValues,
   });
 
-  const { reset, setError, handleSubmit, formState: { errors, isSubmiting, isSubmitSuccessful } } = methods;
+  const { reset, setError, handleSubmit, formState: { errors } } = methods;
 
   const onSubmit = async (data) => {
     try {
@@ -50,6 +50,7 @@ const Login_Form = () => {
     setpassword(!showPassword);
   }
 
+
   return (
     <FormProvider methods={methods} resolver={yupResolver(LoginSchema)} defaultValues={defaultValues} onSubmit={handleSubmit(onSubmit)}>
 
@@ -60,7 +61,7 @@ const Login_Form = () => {
       <Stack spacing={3}>
 
         <ReactformText name={"email"} label="Email Address" />
-        <ReactformText name={"password"} label="Password" type={showPassword ? "text" : "password"}
+        <ReactformText name={"password"}  label="Password" type={showPassword ? "text" : "password"}
 
           InputProps={{
             endAdornment: (
@@ -77,7 +78,8 @@ const Login_Form = () => {
       </Stack>
 
       <Stack alignItems={'flex-end'} my={2} >
-        <Link to="/auth/forgot" variant='body2' underline="always" component={RouterLink}>
+        <Link to="/auth/forgot" variant='subtitle2'
+          underline="always" component={RouterLink}>
           forgot password
         </Link>
       </Stack>

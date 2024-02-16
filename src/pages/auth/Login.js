@@ -1,14 +1,14 @@
 import { Link, Stack, Typography } from '@mui/material'
 import React from 'react'
 import { Link as RouterLink } from 'react-router-dom';
-import { Social_Media } from './Social_Media';
-import  Login_Form  from './Login_Form';
+import { Social_Media } from '../../Sections/auth/Social_Media';
+import Login_Form from '../../Sections/auth/Login_Form';
 
 export default function Login() {
     return (
         <>
             <Stack spacing={2} position={'relative'}>
-                <Typography variant='h5'>
+                <Typography variant='h4'>
                     Login to Chat
                 </Typography>
 
@@ -22,6 +22,7 @@ export default function Login() {
 
                 </Stack>
                 <Login_Form />
+
                 <Social_Media />
 
             </Stack>

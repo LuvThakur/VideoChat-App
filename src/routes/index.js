@@ -21,11 +21,22 @@ export default function Router() {
   return useRoutes([
     {
       path: '/auth',
-      element: <MainLayout/>, // now we don't have an layout thats why i use an empty 
+      element: <MainLayout />, // now we don't have an layout thats why i use an empty 
       children: [
         {
           path: "login", element: <Login />,
 
+        },
+
+        {
+          path: "register", element: <Register />,
+        },
+
+        {
+          path: "forgot", element: <ForgotPassword />
+        },
+        {
+          path: "new-password", element: <Newpassword />
         }
       ]
     }
@@ -52,6 +63,18 @@ const GeneralApp = Loadable(
 
 const Login = Loadable(
   lazy(() => import("../pages/auth/Login"))
+)
+
+const Register = Loadable(
+  lazy(() => import("../pages/auth/Register"))
+)
+
+const ForgotPassword = Loadable(
+  lazy(() => import("../pages/auth/ForgotPassword"))
+)
+
+const Newpassword = Loadable(
+  lazy(() => import("../pages/auth/NewPassword"))
 )
 
 const Setting = Loadable(
