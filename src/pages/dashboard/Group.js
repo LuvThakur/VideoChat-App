@@ -1,18 +1,26 @@
-import React from 'react';
-import { useTheme } from '@emotion/react';
-import { Box, IconButton, Typography, Button, Divider} from '@mui/material';
-import { Stack } from '@mui/material';
-import { ArchiveBox, CircleDashed } from 'phosphor-react';
-import { SimpleBarStyle } from '../../components/Scrollbar';
-import { ChatList } from '../../../src/data/index';
+import React, { useState } from 'react'
+import { Box, Stack, Typography, Link, IconButton, Divider } from '@mui/material'
+import { useTheme } from '@emotion/react'
 import Search_Component from '../../Search/Search_Component';
+import { Plus, Users, UsersThree } from 'phosphor-react';
+import { SimpleBarStyle } from '../../components/Scrollbar';
+import { ChatList } from '../../data';
 import ChatBox from '../../Chat/ChatBox';
-const Chats = () => {
+import CreateGroup from '../../Sections/Group/CreateGroup';
+
+
+
+
+
+export default function Group() {
 
     const theme = useTheme();
 
+    const [open, setopen] = useState(false);
 
-
+    const handleCloseDailog = () => {
+        setopen(false);
+    }
 
     return (
         <Box
@@ -25,47 +33,41 @@ const Chats = () => {
 
             }}
         >
-            <Stack spacing={2} height={'100vh'} p={2} >
+            <Stack spacing={2} height={'100vh'} p={2}>
                 <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                     <Typography variant='h4'>
-                        Chats
+                        Group
                     </Typography>
-
                     <IconButton>
-                        <CircleDashed />
+                        <UsersThree />
                     </IconButton>
-
                 </Stack>
-
-                <Stack sx={{ width: '100%' }}>
+                <Stack width={'100%'}>
                     <Box
+
                         sx={{
-                            display: 'flex',
                             background: theme.palette.mode === 'light' ? '#EAF2FE' : theme.palette.background.default,
-                            height: '50px',
                             borderRadius: '20px',
+                            display: 'flex',
+                            height: '50px',
                             justifyContent: 'center',
                             alignItems: 'center'
-                        }}>
-                        <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                        }}
+                    >
+                        <Stack>
                             <Search_Component />
                         </Stack>
                     </Box>
                 </Stack>
-
-                <Stack direction={'row'} alignItems={'center'}>
-                    <IconButton>
-                        <ArchiveBox />
+                <Stack direction={'row'} justifyContent={'space-between'} alignItems={'center'}>
+                    <Typography component={Link} underline="none">
+                        Create New Group
+                    </Typography>
+                    <IconButton onClick={() => { setopen(true) }}>
+                        <Plus color='#709CE6' />
                     </IconButton>
-
-                    <Button>
-                        Archived
-                    </Button>
-
                 </Stack>
-
                 <Divider />
-
                 <Stack sx={{ flexGrow: 1, overflowY: 'scroll', height: '100%' }} >
                     <SimpleBarStyle timeout={500} clickOnTrack={false} >
                         <Stack direction={'column'} spacing={2.5}>
@@ -83,17 +85,16 @@ const Chats = () => {
                                 All Chats
                             </Typography>
 
-
                             {ChatList.filter((chat) => chat.pinned === false).map((chat) => {
                                 return <ChatBox key={chat.id} {...chat} />
                             })}
                         </Stack>
                     </SimpleBarStyle>
-                </Stack>
 
+                </Stack>
             </Stack>
-        </Box >
-    );
+            {open && <CreateGroup open={open} handleClose={handleCloseDailog} />}
+        </Box>
+    )
 }
 
-export default Chats;

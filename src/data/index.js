@@ -350,7 +350,7 @@ const Starred_Doc = [
     incoming: true,
     outgoing: false,
   },
-  
+
   {
     type: "msg",
     message: "Hi 👋 Panda, not bad, u ?",
@@ -384,7 +384,7 @@ const Starred_Doc = [
     incoming: false,
     outgoing: true,
   },
-  
+
   {
     type: "msg",
     message: "Hi 👋 Panda, not bad, u ?",
@@ -420,6 +420,55 @@ const Starred_Doc = [
   },
 ];
 
+
+const Call_history = [
+
+  {
+    id: 0,
+    img: faker.image.avatar(),
+    name: faker.name.firstName(),
+    incoming: true,
+    missed: false,
+    date: "yesterday"
+  },
+  {
+    id: 1,
+    img: faker.image.avatar(),
+    name: faker.name.firstName(),
+    incoming: true,
+    missed: true,
+    date: "20-01-2024"
+  },
+  {
+    id: 2,
+    img: faker.image.avatar(),
+    name: faker.name.firstName(),
+    incoming: false,
+    missed: false,
+    date: "15-01-2024"
+
+  },
+  {
+    id: 3,
+    img: faker.image.avatar(),
+    name: faker.name.firstName(),
+    incoming: true,
+    missed: false,
+    date: "19-01-2024"
+
+  },
+  {
+    id: 4,
+    img: faker.image.avatar(),
+    name: faker.name.firstName(),
+    incoming: true,
+    missed: false,
+    date: "20-01-2024"
+
+  }
+
+];
+
 export {
   Profile_Menu,
   Nav_Setting,
@@ -429,5 +478,6 @@ export {
   Message_options,
   Share_Link,
   Share_Doc,
-  Starred_Doc
+  Starred_Doc,
+  Call_history
 };  
