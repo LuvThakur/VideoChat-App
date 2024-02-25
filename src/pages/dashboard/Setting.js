@@ -85,63 +85,62 @@ export default function Setting() {
     ];
 
     return (
-        <Stack direction={'row'} width={'100%'}>
+        <Box width={'320px'} height={'100vh'} sx={{ backgroundColor: theme.palette.mode === 'light' ? '#F8FAFF' : theme.palette.background.paper, boxShadow: '0 0 2px rgba(0,0,0,.25)' }}>
 
-            <Box width={'320px'} height={'100vh'} sx={{ backgroundColor: theme.palette.mode === 'light' ? '#F8FAFF' : theme.palette.background.paper, boxShadow: '0 0 2px rgba(0,0,0,.25)' }}>
+            <Stack direction={'column'} width={'100%'} p={4} spacing={5}>
 
-                <Stack direction={'column'} width={'100%'} p={4} spacing={5}>
+                <Stack direction={'row'} alignItems={'center'} spacing={3}>
+                    <IconButton>
+                        <CaretLeft />
+                    </IconButton>
+                    <Typography variant='h5'>
+                        Settings
+                    </Typography>
+                </Stack>
 
-                    <Stack direction={'row'} alignItems={'center'} spacing={3}>
-                        <IconButton>
-                            <CaretLeft />
-                        </IconButton>
-                        <Typography variant='subtitle2'>
-                            Settings
+                <Stack direction={'row'} spacing={3}>
+                    <Avatar sx={{ width: '50px', height: '50px' }} src={faker.image.avatar()} />
+                    <Stack direction={'column'}>
+
+                        <Typography>
+                            Satoru Sukuna
+                        </Typography>
+                        <Typography>
+                            Sensei
                         </Typography>
                     </Stack>
 
-                    <Stack direction={'row'} spacing={3}>
-                        <Avatar sx={{ width: '50px', height: '50px' }} src={faker.image.avatar()} />
-                        <Stack direction={'column'}>
-
-                            <Typography>
-                                Satoru Sukuna
-                            </Typography>
-                            <Typography>
-                                Sensei
-                            </Typography>
-                        </Stack>
-
-                    </Stack>
+                </Stack>
 
 
-                    <Stack spacing={2}>
-                        {
-                            list.map((el, key) => {
-                                return (
-                                    <Stack key={key}>
-                                        <Stack direction={'row'} alignItems={'center'} spacing={2} sx={{ cursor: 'pointer' }} onClick={el.onclick}>
-                                            <IconButton >
-                                                {el.icon}
-                                            </IconButton>
+                <Stack spacing={2}>
+                    {
+                        list.map((el, key) => {
+                            return (
+                                <Stack key={key}>
+                                    <Stack direction={'row'} alignItems={'center'} spacing={2} sx={{ cursor: 'pointer' }} onClick={el.onclick}>
+                                        <IconButton >
+                                            {el.icon}
+                                        </IconButton>
 
-                                            <Typography>
-                                                {el.title}
-                                            </Typography>
-
-                                        </Stack>
-                                        {key !== 7 && <Divider />}
+                                        <Typography>
+                                            {el.title}
+                                        </Typography>
 
                                     </Stack>
-                                )
-                            })
+                                    {key !== 7 && <Divider />}
 
-                        }
-                    </Stack>
+                                </Stack>
+                            )
+                        })
+
+                    }
                 </Stack>
-            </Box>
+            </Stack>
+
             {openblock && <ThemeDailog open={openblock} handleClose={handlecloseblk} />}
             {openShortcut && <Shortcut open={openShortcut} handleClose={handlecloseShortcut} />}
-        </Stack>
+        </Box>
+
     )
 }

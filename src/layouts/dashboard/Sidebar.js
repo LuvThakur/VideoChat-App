@@ -8,7 +8,7 @@ import { faker } from '@faker-js/faker';
 import useSettings from "../../hooks/useSettings";
 import AntSwitch from "../../components/AntSwitch";
 import { Profile_Menu } from "../../data";
-
+import { useNavigate } from "react-router-dom";
 
 const ProfileOptions = ({ handleClick, anchorEl }) => {
 
@@ -19,6 +19,20 @@ const ProfileOptions = ({ handleClick, anchorEl }) => {
 
         handleClick();
     };
+
+    const Navigate = useNavigate();
+
+    const profilepath = (idx) => {
+        switch (idx) {
+            case 0:
+                return "/profile";
+            case 1:
+                return "/setting";
+            case 2:
+                return "/auth/login"
+        }
+    }
+
     return (
         <>
             <Menu
@@ -53,9 +67,9 @@ const ProfileOptions = ({ handleClick, anchorEl }) => {
 
                                 <MenuItem onClick={handleClose} key={index}>
 
-                                    <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                                    <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} onClick={() => { Navigate(profilepath(index)) }}>
 
-                                        <IconButton>
+                                        <IconButton >
                                             {el.icon}
                                         </IconButton>
 
@@ -99,6 +113,29 @@ export default function Sidebar() {
         setAnchorEl(null);
         setProfile(false);
     };
+
+    const Navigate = useNavigate();
+
+
+    const getpath = (idx) => {
+
+        switch (idx) {
+            case 0:
+                return "/app"
+            case 1:
+                return "/group"
+
+            case 2:
+                return "/call"
+
+            case 3:
+                return "/setting"
+
+            default:
+                break;
+        }
+    }
+
     return (
         <Box sx={{
             backgroundColor: theme.palette.background.default,
@@ -129,13 +166,13 @@ export default function Sidebar() {
                         {
 
 
-                            Nav_Buttons.map((button) =>
-                                button.index === selected ?
+                            Nav_Buttons.map((button, idx) =>
+                                idx === selected ?
 
                                     (
-                                        <Box key={button.index} sx={{ backgroundColor: theme.palette.primary.main, borderRadius: '12px' }}>
+                                        <Box key={idx} sx={{ backgroundColor: theme.palette.primary.main, borderRadius: '12px' }}>
 
-                                            <IconButton sx={{ color: '#FFFFFF' }}>
+                                            <IconButton sx={{ color: '#FFFFFF' }} >
                                                 {button.icon}
                                             </IconButton>
 
@@ -144,7 +181,7 @@ export default function Sidebar() {
 
                                     :
 
-                                    <IconButton onClick={() => setSselected(button.index)} key={button.index} sx={{ color: theme.palette.mode === 'dark' ? '#FFFFFF' : '#080707' }}>
+                                    <IconButton onClick={() => { setSselected(idx); Navigate(getpath(idx)) }} key={idx} sx={{ color: theme.palette.mode === 'dark' ? '#FFFFFF' : '#080707' }} >
                                         {button.icon}
                                     </IconButton>
 
@@ -170,7 +207,7 @@ export default function Sidebar() {
 
                             :
 
-                            <IconButton onClick={() => setSselected(3)} sx={{ color: theme.palette.mode === 'dark' ? '#FFFFFF' : '#080707' }}>
+                            <IconButton onClick={() => { setSselected(3); Navigate(getpath(3)) }} sx={{ color: theme.palette.mode === 'dark' ? '#FFFFFF' : '#080707' }}>
                                 <Gear size={32} />
                             </IconButton>
                     }
@@ -193,6 +230,6 @@ export default function Sidebar() {
 
             </Stack>
 
-        </Box>
+        </Box >
     )
 }
