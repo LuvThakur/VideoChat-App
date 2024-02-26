@@ -1,8 +1,7 @@
-import { Box, IconButton, Stack, Typography, Avatar, Divider } from '@mui/material'
+import { Box, IconButton, Stack, Typography } from '@mui/material'
 import React from 'react'
 import { useTheme } from '@emotion/react'
 import { CaretLeft } from 'phosphor-react';
-import { faker } from '@faker-js/faker';
 import Profile_Form from '../../Sections/Profile/Profile_Form';
 
 
