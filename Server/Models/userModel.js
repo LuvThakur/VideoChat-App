@@ -59,6 +59,9 @@ const userSchema = new Schema({
 
     updatedAt: {
         type: Date
+    },
+    verified: {
+        type: Boolean
     }
 })
 

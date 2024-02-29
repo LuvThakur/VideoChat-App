@@ -26,10 +26,8 @@ const server = http.createServer(app);
 const db_url = process.env.DB_URI.replace("<password>", process.env.DB_PASS);
 
 const options = {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true,
-    useFindAndModify: false,
+
+    // no longer needed
 };
 
 
