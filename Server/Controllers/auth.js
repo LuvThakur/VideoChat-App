@@ -74,7 +74,6 @@ exports.login() = async (req, res, next) => {
 
 // Register 
 
-
 exports.register() = async (req, res, next) => {
 
     const { firstname, lastname, email, password } = req.body;
@@ -127,9 +126,69 @@ exports.register() = async (req, res, next) => {
 
     exports.sendotp() = async (req, res, next) => {
         const { userId } = req.body;
-        const newOtp = otpGenerator.generate(6, { digits: true,  upperCaseAlphabets: false, specialChars: false });
+        const newOtp = otpGenerator.generate(6, { digits: true, lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false });
+
+
+        // otp expiry time 
+
+        const otpExpiryTime = Date.now() + 10 * 60 * 1000;
+
+
+        await User.findByIdAndUpdate(userId, { otp: newOtp, otpExpiry: otpExpiryTime })
+
+        //  send email
+
+        res.statue(200).json({
+            status: "success",
+            message: "Otp sent successfully"
+        })
 
     }
 
+
+    exports.verifiedOtp() = async (req, res, next) => {
+
+        //  verify an otp and update user record in db
+
+        const { email, otp } = req.body;
+
+
+        const userInfo = await User.findOne({
+            email,
+
+            otpExpiryTime: { $gt: Date.now() } // otpexpiry time greater than current time 
+        })
+
+        if (!userInfo) {
+            return res.status(400).json({
+                error: "User not found"
+            })
+        }
+
+        if (userInfo.otpExpiryTime < Date.now()) {
+            return res.status(400).json({
+                error: "Otp expired"
+            })
+        }
+
+        // compare otp
+
+        const isOtpmatch = await userInfo.correctOtp(otp, userInfo.otp)
+
+
+        if (!isOtpmatch) {
+            return res.status(400).json({
+                error: "wrong otp"
+            })
+        }
+
+        userInfo.verified = true;
+
+        userInfo.otp = undefined;
+
+        await userInfo.save({ new: true, validateModifiedOnly: true });
+
+
+    }
 
 }

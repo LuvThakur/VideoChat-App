@@ -61,14 +61,48 @@ const userSchema = new Schema({
         type: Date
     },
     verified: {
-        type: Boolean
+        type: Boolean,
+        default: false
+    },
+
+    otp: {
+        type: Number
+    },
+    otpExpiry: {
+        type: Date
     }
+
 })
 
+// this hook call before save an otp
+userSchema.pre("save", async function (next) {
+
+    // if otp not modified 
+
+    if (!this.isModified("otp")) {
+        return next();
+    }
+    try {
+        const hasotp = bcrypt.hash(this.otp, 12)
+
+        this.otp = hasotp
+
+        next();
+    }
+    catch (error) {
+        return next(error);
+    }
+})
 
 userSchema.methods.correctPassword = async function (storePassword, userPassword) {
 
     return await bcrypt.compare(storePassword, userPassword);
+}
+
+
+
+userSchema.methods.correctOtp = async function (storeOtp, userOtp) {
+    return await bcrypt.compare(storeOtp, userOtp);
 }
 
 const User = mongoose.model('user', userSchema); // Model name 'user'
