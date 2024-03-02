@@ -39,7 +39,9 @@ const userSchema = new Schema({
     password: {
         type: String
     },
-
+    confirmPassword: {
+        type: String
+    },
     passwordChangesAt: {
 
         type: Date
@@ -94,6 +96,23 @@ userSchema.pre("save", async function (next) {
     }
 })
 
+
+// this hook call before save an password
+userSchema.pre("save", async function (next) {
+    // if password not modified
+    if (!this.isModified("password")) {
+        return next();
+    }
+    try {
+        const hashedPassword = await bcrypt.hash(this.password, 12);
+        this.password = hashedPassword;
+        next();
+    } catch (error) {
+        return next(error);
+    }
+});
+
+
 userSchema.methods.correctPassword = async function (storePassword, userPassword) {
 
     return await bcrypt.compare(storePassword, userPassword);
@@ -103,6 +122,34 @@ userSchema.methods.correctPassword = async function (storePassword, userPassword
 
 userSchema.methods.correctOtp = async function (storeOtp, userOtp) {
     return await bcrypt.compare(storeOtp, userOtp);
+}
+
+
+// to passwordResetToken in random has form
+
+userSchema.methods.createPasswordResetToken = function () {
+
+    const tokenLength = 32;
+    const resetToken = crypto.randomBytes(tokenLength);
+
+    // Create a SHA-256 hash of the random bytes
+    const hash = crypto.createHash('sha256');
+
+    hash.update(resetToken);
+
+    const resetTokenHash = hash.digest('hex');
+
+    this.passwordResetToken = resetToken;
+
+    this.passwordResetExpires = Date.now() + 10 * 60 * 1000; //expire after 10 min
+    return resetTokenHash;
+
+}
+
+// ensure user log out or not able access when another user reset password recently
+userSchema.checkPasswordAfterissue = function (time) {
+
+    return time < this.passwordChangesAt;
 }
 
 const User = mongoose.model('user', userSchema); // Model name 'user'
