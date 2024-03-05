@@ -21,7 +21,7 @@ console.log("->", process.env.JWT_SECRET);
 
 // login
 
-exports.login() = async (req, res, next) => {
+exports.login = async (req, res, next) => {
 
     // destructuring for get email and password from body
     const { email, password } = req.body;
@@ -77,7 +77,7 @@ exports.login() = async (req, res, next) => {
 
 // Register 
 
-exports.register() = async (req, res, next) => {
+exports.register = async (req, res, next) => {
 
     const { firstname, lastname, email, password } = req.body;
 

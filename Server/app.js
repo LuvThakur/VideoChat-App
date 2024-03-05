@@ -7,6 +7,9 @@ const rateLimiter = require('express-rate-limit');
 const helmet = require('helmet');
 const mongosanitize = require('express-mongo-sanitize');
 
+
+const Routes = require("./Routes/Index");
+
 // const xss = require('xss-clean');
 
 
@@ -48,6 +51,7 @@ const limiter = rateLimiter({
 
 app.use("/tawk", limiter)
 
+
 app.use(express.urlencoded({
     extended: true
 }));
@@ -63,6 +67,6 @@ app.use(cors(
 
 
 
-
+app.use(Routes);
 
 module.exports = app;
