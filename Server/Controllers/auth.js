@@ -8,16 +8,18 @@ const crypto = require('crypto')
 require('dotenv').config();
 
 
+const mail = require("../Service/mailService");
+
 // models exports
 const User = require("../Models/userModel");
 const { promisify } = require('util');
 
 const signToken = (userId) => jwt.sign({ userId }, process.env.JWT_SECRET);
 
+// exports the fileterObjectField
+const filterField = require("../Utils/FiltersObjFields");
 
-console.log("->", process.env.JWT_SECRET);
-
-
+const otpTemplate =require("../Service/Otptemplate");
 
 // login
 
@@ -76,142 +78,146 @@ exports.login = async (req, res, next) => {
 }
 
 // Register 
-
 exports.register = async (req, res, next) => {
-
     const { firstname, lastname, email, password } = req.body;
 
-    //  to prevent the modification allow only seleted fields for modification
-    const filterbody = filterObject(req.body, "firstname ", "lastname", "email", " password");
-
+    const filterbody = filterField(req.body, "firstname", "lastname", "email", "password");
 
     const options = {
-        // ensures that the updated document is returned after the update operation
         new: true,
-        // enable validation only on fields that have been modified during the update operation.
         validateModifiedOnly: true
     }
 
-    // check user exist or not
     const existUser = await User.findOne({ email: email });
 
     try {
-
-
         if (existUser && existUser.verified) {
-
             return res.status(400).json({
-
-                statue: "error",
+                status: "error",
                 message: "User already exists"
             });
-
-
-        }
-        else if (existUser) {
-
-            await User.findOneAndUpdate({ email: email }, filterbody, options)
-
-            // Set userId in req object for later use
+        } else if (existUser) {
+            await User.findOneAndUpdate({ email: email }, filterbody, options);
             req.userId = existUser._id;
-            next(); // Move to the next middleware or route handler
-        }
-        else {
-            // if user not exist 
-
-
-            const newUser = create({ filterbody });
-
+        } else {
+            const newUser = await User.create(filterbody);
             req.userId = newUser._id;
-
-            next();
-
-
         }
 
+        const token = signToken(req.userId);
 
-        exports.sendotp() = async (req, res, next) => {
-            const { userId } = req.body;
-            const newOtp = otpGenerator.generate(6, { digits: true, lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false });
+        // Send OTP after registering user
+        req.body.userId = req.userId; // Assuming you need this in sendOtp
+        next(); // Call next here
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            status: "error",
+            message: "Internal Server Error"
+        });
+    }
+};
 
 
-            // otp expiry time 
 
-            const otpExpiryTime = Date.now() + 10 * 60 * 1000;
+exports.sendOtp = async (req, res, next) => {
+    try {
+      
+        const { userId } = req.body;
 
 
-            await User.findByIdAndUpdate(userId, { otp: newOtp, otpExpiry: otpExpiryTime })
+        // Fetch the user from the database using the userId
+        const user = await User.findById(userId);
 
-            //  send email functionality remains
-
-            res.statue(200).json({
-                status: "success",
-                message: "Otp sent successfully"
-            })
-
+        if (!user) {
+            return res.status(404).json({
+                status: "error",
+                message: "User not found"
+            });
         }
 
+        // Now user has email property
+        const userEmail = user.email;
 
-        exports.verifiedOtp() = async (req, res, next) => {
+        const newOtp = otpGenerator.generate(6, { digits: true, lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false });
 
-            //  verify an otp and update user record in db
+        const otpExpiryTime = Date.now() + 10 * 60 * 1000;
 
-            const { email, otp } = req.body;
-
-
-            const userInfo = await User.findOne({
-                email,
-
-                otpExpiryTime: { $gt: Date.now() } // otpexpiry time greater than current time 
-            })
-
-            if (!userInfo) {
-                return res.status(400).json({
-                    error: "User not found"
-                })
-            }
-
-            if (userInfo.otpExpiryTime < Date.now()) {
-                return res.status(400).json({
-                    error: "Otp expired"
-                })
-            }
-
-            // compare otp
-
-            const isOtpmatch = await userInfo.correctOtp(otp, userInfo.otp)
+        // Update user with new OTP and expiry time
+        await User.findByIdAndUpdate(userId, { otp: newOtp, otpExpiry: otpExpiryTime });
 
 
-            if (!isOtpmatch) {
-                return res.status(400).json({
-                    error: "wrong otp"
-                })
-            }
+        // user.otp =  newOtp.toString();
 
-            userInfo.verified = true;
+        await user.save({ new: true, validateModifiedOnly: true })
 
-            userInfo.otp = undefined;
-
-            await userInfo.save({ new: true, validateModifiedOnly: true });
-
-
-        }
-
-
-        const token = signToken(userInfo._id);
+        // Send OTP email
+        mail.sendEmail({
+            from: 'luvthakur262001@gmail.com',
+            to: userEmail,
+            subject: "OTP for Video-Chat-App",
+            html: otpTemplate(user.firstname, newOtp),
+            text: `Your OTP is ${newOtp} and is valid for 10 minutes`,
+            attachments: [],
+        });
 
         res.status(200).json({
             status: "success",
-            token,
-            message: "Signup successfully"
+            message: "OTP sent successfully"
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            status: "error",
+            message: "Internal Server Error"
         });
     }
-    catch (error) {
-        res.status(400).json({
-            status: "error",
-            message: "internal error"
+};
+
+
+exports.verifiedOtp = async (req, res, next) => {
+
+    //  verify an otp and update user record in db
+
+    const { email, otp } = req.body;
+
+
+    const userInfo = await User.findOne({
+        email,
+
+        otpExpiryTime: { $gt: Date.now() } // otpexpiry time greater than current time 
+    })
+
+    if (!userInfo) {
+        return res.status(400).json({
+            error: "User not found"
         })
     }
+
+    if (userInfo.otpExpiryTime < Date.now()) {
+        return res.status(400).json({
+            error: "Otp expired"
+        })
+    }
+
+    // compare otp
+
+    const isOtpmatch = await userInfo.correctOtp(otp, userInfo.otp)
+
+
+    if (!isOtpmatch) {
+        return res.status(400).json({
+            error: "wrong otp"
+        })
+    }
+
+    userInfo.verified = true;
+
+    userInfo.otp = undefined;
+
+    await userInfo.save({ new: true, validateModifiedOnly: true });
+
+
 }
 
 

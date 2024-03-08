@@ -14,14 +14,6 @@ process.on("uncaughtException", (err) => {
 })
 
 
-
-// we need http server 
-const http = require('http');
-
-// server create 
-const server = http.createServer(app);
-
-
 // setup db connection
 const db_url = process.env.DB_URI.replace("<password>", process.env.DB_PASS);
 
@@ -34,25 +26,35 @@ const options = {
 mongoose.connect(db_url, options).then(
     () => {
         console.log('Connected to MongoDB');
+        startServer();
     }
 ).catch((err) => {
     console.error('Error connecting to MongoDB:', err.message);
 
 })
 
+function startServer() {
 
 
-// port 
-const port = process.env.PORT || 8000;
+    // we need http server 
+    const http = require('http');
 
-server.listen(port, () => {
-    console.log(`Server Running at port ${port}`);
-})
+    // server create 
+    const server = http.createServer(app);
 
-// handle Rejection error
-process.on("unhandledRejection", (err) => {
-    console.log(err);
-    server.close(() => {
-        process.exit(1);
-    });
-})
+
+    // port 
+    const port = process.env.PORT || 8000;
+
+    server.listen(port, () => {
+        console.log(`Server Running at port ${port}`);
+    })
+
+    // handle Rejection error
+    process.on("unhandledRejection", (err) => {
+        console.log(err);
+        server.close(() => {
+            process.exit(1);
+        });
+    })
+}

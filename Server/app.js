@@ -1,6 +1,5 @@
 const express = require('express');
 const morgan = require('morgan');
-const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const rateLimiter = require('express-rate-limit');
@@ -17,7 +16,7 @@ const Routes = require("./Routes/Index");
 const app = express();
 
 
-
+// middlewares 
 app.use(mongosanitize())
 
 // it gives an error
@@ -34,14 +33,25 @@ app.use(mongosanitize())
 app.use(express.json({ limit: "10kb" }))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
+app.use(express.urlencoded({
+    extended: true
+}));
+app.use(cors(
+    {
+        origin: "*",
+        methods: ["GET", "PUT", "POST", "PATCH", "DELETE"],
+        credentials: true,
+    }
+))
 app.use(helmet())
 
+// Development logging
 if (process.env.NODE_ENV === "development") {
 
     app.use(morgan("dev"))
 
 }
-
+// Rate limiter
 const limiter = rateLimiter({
     max: 3000,
     windowMS: 60 * 60 * 1000,
@@ -51,22 +61,7 @@ const limiter = rateLimiter({
 
 app.use("/tawk", limiter)
 
-
-app.use(express.urlencoded({
-    extended: true
-}));
-
-app.use(cors(
-    {
-        origin: "*",
-        methods: ["GET", "PUT", "POST", "PATCH", "DELETE"],
-        credentials: true,
-    }
-))
-
-
-
-
+// Routes
 app.use(Routes);
 
 module.exports = app;

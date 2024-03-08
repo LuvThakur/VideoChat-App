@@ -17,3 +17,6 @@ function filterObject(obj, ...allowfields) {
 
     return newObj;
 }
+
+
+module.exports = filterObject;
