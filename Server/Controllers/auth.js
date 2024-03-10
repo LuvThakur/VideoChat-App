@@ -7,8 +7,7 @@ const crypto = require('crypto')
 
 require('dotenv').config();
 
-
-const mail = require("../Service/mailService");
+const sendEmail = require("../Service/mailService"); // Assuming this is the path to mailService.js
 
 // models exports
 const User = require("../Models/userModel");
@@ -19,7 +18,7 @@ const signToken = (userId) => jwt.sign({ userId }, process.env.JWT_SECRET);
 // exports the fileterObjectField
 const filterField = require("../Utils/FiltersObjFields");
 
-const otpTemplate =require("../Service/Otptemplate");
+const otpTemplate = require("../Service/Otptemplate");
 
 // login
 
@@ -122,7 +121,7 @@ exports.register = async (req, res, next) => {
 
 exports.sendOtp = async (req, res, next) => {
     try {
-      
+
         const { userId } = req.body;
 
 
@@ -146,14 +145,11 @@ exports.sendOtp = async (req, res, next) => {
         // Update user with new OTP and expiry time
         await User.findByIdAndUpdate(userId, { otp: newOtp, otpExpiry: otpExpiryTime });
 
-
-        // user.otp =  newOtp.toString();
-
-        await user.save({ new: true, validateModifiedOnly: true })
+        await user.save({ new: true, validateModifiedOnly: true });
 
         // Send OTP email
-        mail.sendEmail({
-            from: 'luvthakur262001@gmail.com',
+        await sendEmail({
+            from: 'luvthakur262001@gmail.com', // Replace with a valid email
             to: userEmail,
             subject: "OTP for Video-Chat-App",
             html: otpTemplate(user.firstname, newOtp),
@@ -161,12 +157,10 @@ exports.sendOtp = async (req, res, next) => {
             attachments: [],
         });
 
-        res.status(200).json({
-            status: "success",
-            message: "OTP sent successfully"
-        });
+        res.json({ message: "Email sent successfully in auth" });
+
     } catch (error) {
-        console.error(error);
+        console.error("er->", error);
         res.status(500).json({
             status: "error",
             message: "Internal Server Error"

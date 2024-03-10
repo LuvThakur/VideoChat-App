@@ -2,8 +2,7 @@
 
 function otpTemplate(firstname, OtpCode) {
 
-    return
-    `
+    return `
      <div>
             <h1>Hello ${firstname},</h1>
             <p>Your OTP for Video-Chat-App is: ${OtpCode}</p>
