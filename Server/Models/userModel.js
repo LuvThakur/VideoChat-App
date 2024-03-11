@@ -117,12 +117,20 @@ userSchema.methods.correctPassword = async function (storePassword, userPassword
 
     return await bcrypt.compare(storePassword, userPassword);
 }
+userSchema.methods.correctOtp = async function (enteredOtp, savedOtp) {
+    // Convert both enteredOtp and savedOtp to strings
+    const enteredOtpString = enteredOtp.toString();
+    const savedOtpString = savedOtp.toString();
+    console.log("str->", enteredOtpString, "savedOtpString->", savedOtpString);
 
+    // Compare the hashed value of enteredOtpString with savedOtpString
+    // const isMatch = await bcrypt.compare(enteredOtpString, savedOtpString);
+    const isMatch = (enteredOtpString === savedOtpString);
+    console.log("Is OTP Match?", isMatch);
 
+    return isMatch;
+};
 
-userSchema.methods.correctOtp = async function (storeOtp, userOtp) {
-    return await bcrypt.compare(storeOtp, userOtp);
-}
 
 
 // to passwordResetToken in random has form

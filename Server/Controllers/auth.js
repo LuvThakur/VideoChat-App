@@ -168,51 +168,55 @@ exports.sendOtp = async (req, res, next) => {
     }
 };
 
-
 exports.verifiedOtp = async (req, res, next) => {
-
-    //  verify an otp and update user record in db
-
+    // verify an otp and update user record in db
     const { email, otp } = req.body;
-
 
     const userInfo = await User.findOne({
         email,
+    });
 
-        otpExpiryTime: { $gt: Date.now() } // otpexpiry time greater than current time 
-    })
 
     if (!userInfo) {
+        // If user not found
         return res.status(400).json({
-            error: "User not found"
-        })
+            error: "User not found for the provided email"
+        });
     }
 
-    if (userInfo.otpExpiryTime < Date.now()) {
+
+
+    if (userInfo.otpExpiry < Date.now()) {
+        // If OTP has expired
         return res.status(400).json({
-            error: "Otp expired"
+            error: "OTP has expired"
         })
+
     }
+
+
+    console.log("email->", email, "otpExpiry->", userInfo.otpExpiry);
+
+    console.log("otpb->", otp, "saveotp->", userInfo.otp);
 
     // compare otp
+    const isOtpMatch = await userInfo.correctOtp(otp, userInfo.otp);
 
-    const isOtpmatch = await userInfo.correctOtp(otp, userInfo.otp)
+    console.log("Is OTP Match?", isOtpMatch);
 
-
-    if (!isOtpmatch) {
+    if (!isOtpMatch) {
         return res.status(400).json({
-            error: "wrong otp"
-        })
+            error: "Wrong otp"
+        });
     }
-
     userInfo.verified = true;
-
     userInfo.otp = undefined;
 
     await userInfo.save({ new: true, validateModifiedOnly: true });
 
+    res.json({ message: "OTP verified successfully" });
+};
 
-}
 
 
 //  protect routes 
