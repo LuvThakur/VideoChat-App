@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 
 const bcrypt = require('bcrypt');
 
+const crypto = require('crypto');
+
 const { Schema } = mongoose;
 
 
@@ -68,7 +70,7 @@ const userSchema = new Schema({
     },
 
     otp: {
-        type: Number
+        type: String
     },
     otpExpiry: {
         type: Date
@@ -76,35 +78,52 @@ const userSchema = new Schema({
 
 })
 
+/*
 // this hook call before save an otp
 userSchema.pre("save", async function (next) {
-
-    // if otp not modified 
-
-    if (!this.isModified("otp")) {
-        return next();
-    }
     try {
-        const hasotp = bcrypt.hash(this.otp, 12)
 
-        this.otp = hasotp
+        if (!this.isModified('otp')) {
+            Error("otp is rred")
+            return next();
+        }
+
+
+        // Check if otp is present
+        if (!this.otp) {
+            return next(new Error("otp is required"));
+        }
+
+        const saltRounds = 10; // Number of salt rounds for bcrypt
+        const hashedOtp = await bcrypt.hash(this.otp, saltRounds);
+        this.otp = hashedOtp;
+
 
         next();
-    }
-    catch (error) {
+    } catch (error) {
         return next(error);
     }
-})
+});
+
+*/
 
 
-// this hook call before save an password
+
+// Hash the password before saving to the database
 userSchema.pre("save", async function (next) {
-    // if password not modified
-    if (!this.isModified("password")) {
-        return next();
-    }
     try {
-        const hashedPassword = await bcrypt.hash(this.password, 12);
+        // Check if the password has been modified or is new
+        if (!this.isModified('password')) {
+            return next();
+        }
+
+        // Check if password is present
+        if (!this.password) {
+            return next(new Error("Password is required"));
+        }
+
+        const saltRounds = 10; // You can adjust the number of salt rounds as needed
+        const hashedPassword = await bcrypt.hash(this.password, saltRounds);
         this.password = hashedPassword;
         next();
     } catch (error) {
@@ -112,25 +131,32 @@ userSchema.pre("save", async function (next) {
     }
 });
 
-
 userSchema.methods.correctPassword = async function (storePassword, userPassword) {
 
     return await bcrypt.compare(storePassword, userPassword);
 }
-userSchema.methods.correctOtp = async function (enteredOtp, savedOtp) {
-    // Convert both enteredOtp and savedOtp to strings
-    const enteredOtpString = enteredOtp.toString();
-    const savedOtpString = savedOtp.toString();
-    console.log("str->", enteredOtpString, "savedOtpString->", savedOtpString);
 
-    // Compare the hashed value of enteredOtpString with savedOtpString
-    // const isMatch = await bcrypt.compare(enteredOtpString, savedOtpString);
-    const isMatch = (enteredOtpString === savedOtpString);
-    console.log("Is OTP Match?", isMatch);
 
-    return isMatch;
-};
+// userSchema.methods.correctOtp = async function (enteredOtp, savedOtp) {
 
+//     return await bcrypt.compare(enteredOtp, savedOtp);
+// }
+
+// // check an otp
+// userSchema.methods.correctOtp = async function (enteredOtp, savedOtp) {
+//     try {
+
+//         console.log("Is O", enteredOtp, savedOtp);
+
+//         const isMatch = await bcrypt.compare(enteredOtp, savedOtp);
+//         // const isMatch = (enteredOtp === savedOtp);
+//         console.log("Is OTP Match?", isMatch);
+//         return isMatch;
+//     } catch (error) {
+//         console.error("Error comparing OTPs:", error);
+//         return false; // Return false if there's an error
+//     }
+// };
 
 
 // to passwordResetToken in random has form
@@ -147,7 +173,7 @@ userSchema.methods.createPasswordResetToken = function () {
 
     const resetTokenHash = hash.digest('hex');
 
-    this.passwordResetToken = resetToken;
+    this.passwordResetToken = resetTokenHash;
 
     this.passwordResetExpires = Date.now() + 10 * 60 * 1000; //expire after 10 min
     return resetTokenHash;

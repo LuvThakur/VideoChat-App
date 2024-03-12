@@ -3,6 +3,8 @@ const otpGenerator = require('otp-generator')
 
 const crypto = require('crypto')
 
+const bcrypt = require('bcrypt')
+
 // IMPORT LOCAL VAR FROM CONFIG FFIL
 
 require('dotenv').config();
@@ -20,61 +22,9 @@ const filterField = require("../Utils/FiltersObjFields");
 
 const otpTemplate = require("../Service/Otptemplate");
 
-// login
-
-exports.login = async (req, res, next) => {
-
-    // destructuring for get email and password from body
-    const { email, password } = req.body;
-
-    try {
-
-        if (!email || !password) {
-            return res.status(400).json({
-                status: "error",
-                message: "Email and password are required"
-            });
-        }
-
-        const userDoc = await User.findOne({ email: email }).select("+password");
-
-
-        if (!userDoc) {
-            return res.status(400).json({
-                status: "error",
-                message: "User not found"
-            });
-        }
-
-        const isPasswordCorrect = await userDoc.correctPassword(password, userDoc.password);
-
-        if (!isPasswordCorrect) {
-            return res.status(400).json({
-                status: "error",
-                message: "Incorrect password"
-            });
-        }
 
 
 
-        const token = signToken(userDoc._id);
-
-        res.status(200).json({
-            status: "success",
-            token,
-            message: "Logged in successfully"
-        });
-    }
-
-    catch (error) {
-
-        res.status(500).json({
-            status: "error",
-            message: "Something went wrong"
-        })
-    }
-
-}
 
 // Register 
 exports.register = async (req, res, next) => {
@@ -117,6 +67,55 @@ exports.register = async (req, res, next) => {
     }
 };
 
+
+// login
+exports.login = async (req, res, next) => {
+    // destructuring to get email and password from body
+    const { email, password: inputPassword } = req.body;
+
+    try {
+        if (!email || !inputPassword) {
+            return res.status(400).json({
+                status: "error",
+                message: "Email and password are required"
+            });
+        }
+
+        const userDoc = await User.findOne({ email });
+        if (!userDoc) {
+            return res.status(400).json({
+                status: "error",
+                message: "User not found"
+            });
+        }
+
+        const storedPassword = userDoc.password.trim(); // Trim stored password
+
+        const isPasswordCorrect = await userDoc.correctPassword(inputPassword, storedPassword);
+
+        console.log("isPasswordCorrect", isPasswordCorrect);
+        if (!isPasswordCorrect) {
+            return res.status(400).json({
+                status: "error",
+                message: "Incorrect password"
+            });
+        }
+
+        const token = signToken(userDoc._id);
+
+        res.status(200).json({
+            status: "success",
+            token,
+            message: "Logged in successfully"
+        });
+    } catch (error) {
+        console.error("Login Error:", error);
+        res.status(500).json({
+            status: "error",
+            message: "Something went wrong"
+        });
+    }
+};
 
 
 exports.sendOtp = async (req, res, next) => {
@@ -184,7 +183,11 @@ exports.verifiedOtp = async (req, res, next) => {
         });
     }
 
-
+    if (userInfo.verified) {
+        return res.status(400).json({
+            message: "Email already verified"
+        })
+    }
 
     if (userInfo.otpExpiry < Date.now()) {
         // If OTP has expired
@@ -195,12 +198,14 @@ exports.verifiedOtp = async (req, res, next) => {
     }
 
 
-    console.log("email->", email, "otpExpiry->", userInfo.otpExpiry);
+    // console.log("email->", email, "otpExpiry->", userInfo.otpExpiry);
 
-    console.log("otpb->", otp, "saveotp->", userInfo.otp);
+    // console.log("otpb->", otp, "saveotp->", userInfo.otp);
 
     // compare otp
-    const isOtpMatch = await userInfo.correctOtp(otp, userInfo.otp);
+    // const isOtpMatch = await userInfo.correctOtp(otp, userInfo.otp);
+    // const isOtpMatch = await bcrypt.compare(otp,userInfo.otp);
+    const isOtpMatch = (otp === userInfo.otp);
 
     console.log("Is OTP Match?", isOtpMatch);
 
@@ -216,6 +221,120 @@ exports.verifiedOtp = async (req, res, next) => {
 
     res.json({ message: "OTP verified successfully" });
 };
+
+
+
+
+exports.forgetPassword = async (req, res, next) => {
+
+    // get user email
+
+    const userdata = await User.findOne({ email: req.body.email });
+
+
+    // user not found
+
+    if (!userdata) {
+        return res.status(404).json({ success: false, error: 'User not found assocaited with this email' });
+    }
+
+    // generate the random reset token
+    const resetToken = userdata.createPasswordResetToken();
+
+    await userdata.save({ validateBeforeSave: false });
+
+    console.log("User-Data ", userdata);
+    console.log("reset->", resetToken);
+
+    // url which send an link of resetToken
+    const Url = `https://chat.com/auth/forget-password/?code=${resetToken}`;
+
+    try {
+
+        // make send email with reset url functionality
+
+        return res.status(200).json({
+            status: "Success",
+            message: "Reset Link Send  to email Successfully"
+        })
+    }
+    catch (error) {
+        userdata.passwordResetToken = undefined;
+        userdata.passwordResetExpires = undefined;
+
+        await userdata.save({ validateBeforeSave: false });
+
+
+        return res.status(500).json({
+
+            status: "error",
+            message: "error occurs while sending an email"
+        })
+    }
+
+
+}
+
+
+exports.resetPassword = async (req, res, next) => {
+    const { Password, ConfirmPassword, Reqtoken } = req.body; // Extract password and confirmPassword
+
+
+    try {
+        // Compare hashed token with database
+        const userData = await User.findOne({
+            passwordResetToken: Reqtoken,
+            passwordResetExpires: { $gt: Date.now() }
+        });
+
+        console.log("User-Data ", userData);
+
+        // If no user found, token is invalid or expired
+        if (!userData) {
+            return res.status(400).json({
+                status: "error",
+                message: 'Invalid or expired token'
+            });
+        }
+
+        // Check if passwords match
+        if (Password !== ConfirmPassword) {
+            return res.status(400).json({
+                status: "error",
+                message: "Passwords do not match"
+            });
+        }
+
+        // Update user's password after submit request
+        userData.password = Password;
+        userData.confirmPassword = ConfirmPassword;
+
+        // Clear password fields from the object
+        userData.passwordResetToken = undefined;
+        userData.passwordResetExpires = undefined;
+
+        // Save the updated user object
+        await userData.save({ validateBeforeSave: false });
+
+        // Generate JWT token for the user
+        const token = signToken(userData._id);
+
+        // Send response with token
+        res.status(200).json({
+            status: "success",
+            token,
+            message: "Password reset successful. You can now log in with your new password."
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            status: "error1",
+            message: "Internal Server Error"
+        });
+    }
+};
+
+
 
 
 
@@ -255,100 +374,5 @@ exports.protect = async (req, res, next) => {
         next();
     } catch (error) {
         return res.status(401).json({ status: "error", message: 'Token is invalid or expired.' });
-    }
-};
-
-
-exports.forgetPassword = async (req, res, next) => {
-
-    // get user email
-
-    const userdata = await User.findOne({ email: req.body.email });
-
-
-    // user not found
-
-    if (!userdata) {
-        return res.status(404).json({ success: false, error: 'User not found assocaited with this email' });
-    }
-
-    // generate the random reset token
-    const resetToken = userdata.createPasswordResetToken();
-
-    // url which send an link of resetToken
-    const Url = `https://chat.com/auth/forget-password/?code=${resetToken}`;
-
-    try {
-
-        // make send email with reset url functionality
-
-        return res.status(200).json({
-            status: "Success",
-            message: "Reset Link Send  to email Successfully"
-        })
-    }
-    catch (error) {
-        userdata.passwordResetToken = undefined;
-        userdata.passwordResetExpires = undefined;
-
-        await userdata.save();
-
-
-        return res.status(500).json({
-
-            status: "error",
-            message: "error occurs while sending an email"
-        })
-    }
-
-
-}
-
-exports.resetPassword = async (req, res, next) => {
-    try {
-        const hasToken = crypto.createHash("sha256").update(req.params.token).digest('hex');
-
-        // compare these field with Schema fields passwordResetToken and passwordResetExpires
-        const userData = await User.findOne({
-            passwordResetToken: hasToken,
-            passwordResetExpires: { $gt: Date.now() }
-        });
-
-        // If no user found, token is invalid or expired
-        if (!userData) {
-            return res.status(400).json({
-                status: "error",
-                message: 'Invalid or expired token'
-            });
-        }
-
-        // Update user's password after submit request
-        userData.password = req.body.password;
-        userData.confirmPassword = req.body.confirmPassword;
-
-        // Clear password fields from the object
-        userData.passwordResetToken = undefined;
-        userData.passwordResetExpires = undefined;
-
-        // Save the updated user object
-        await userData.save({ validateBeforeSave: false });
-
-        // Optionally, send email to notify users of password change
-
-        // Generate JWT token for the user
-        const token = signToken(userData._id);
-
-        // Send response with token
-        res.status(200).json({
-            status: "success",
-            token,
-            message: "Password reset successful. You can now log in with your new password."
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            status: "error",
-            message: "Internal Server Error"
-        });
     }
 };

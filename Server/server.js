@@ -15,7 +15,8 @@ process.on("uncaughtException", (err) => {
 
 
 // setup db connection
-const db_url = process.env.DB_URI.replace("<password>", process.env.DB_PASS);
+// const db_url = process.env.DB_URI.replace("<password>", process.env.DB_PASS);
+const mongoURI = "mongodb://127.0.0.1:27017/ChatApp";
 
 const options = {
 
@@ -23,7 +24,7 @@ const options = {
 };
 
 
-mongoose.connect(db_url, options).then(
+mongoose.connect(mongoURI, options).then(
     () => {
         console.log('Connected to MongoDB');
         startServer();
