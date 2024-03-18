@@ -45,7 +45,6 @@ const userSchema = new Schema({
         type: String
     },
     passwordChangesAt: {
-
         type: Date
     },
 
@@ -57,7 +56,7 @@ const userSchema = new Schema({
         type: Date
     },
 
-    createAt: {
+    passwordcreateAt: {
         type: Date
     },
 
@@ -113,9 +112,9 @@ userSchema.pre("save", async function (next) {
 userSchema.pre("save", async function (next) {
     try {
         // Check if the password has been modified or is new
-        if (!this.isModified('password')) {
-            return next();
-        }
+        // if (!this.isModified('password')) {
+        //     return next();
+        // }
 
         // Check if password is present
         if (!this.password) {
@@ -125,6 +124,7 @@ userSchema.pre("save", async function (next) {
         const saltRounds = 10; // You can adjust the number of salt rounds as needed
         const hashedPassword = await bcrypt.hash(this.password, saltRounds);
         this.password = hashedPassword;
+        this.passwordcreateAt = Date.now();
         next();
     } catch (error) {
         return next(error);
@@ -136,27 +136,12 @@ userSchema.methods.correctPassword = async function (storePassword, userPassword
     return await bcrypt.compare(storePassword, userPassword);
 }
 
+/*
+userSchema.methods.correctOtp = async function (enteredOtp, savedOtp) {
 
-// userSchema.methods.correctOtp = async function (enteredOtp, savedOtp) {
-
-//     return await bcrypt.compare(enteredOtp, savedOtp);
-// }
-
-// // check an otp
-// userSchema.methods.correctOtp = async function (enteredOtp, savedOtp) {
-//     try {
-
-//         console.log("Is O", enteredOtp, savedOtp);
-
-//         const isMatch = await bcrypt.compare(enteredOtp, savedOtp);
-//         // const isMatch = (enteredOtp === savedOtp);
-//         console.log("Is OTP Match?", isMatch);
-//         return isMatch;
-//     } catch (error) {
-//         console.error("Error comparing OTPs:", error);
-//         return false; // Return false if there's an error
-//     }
-// };
+    return await bcrypt.compare(enteredOtp, savedOtp);
+}
+*/
 
 
 // to passwordResetToken in random has form
@@ -175,7 +160,7 @@ userSchema.methods.createPasswordResetToken = function () {
 
     this.passwordResetToken = resetTokenHash;
 
-    this.passwordResetExpires = Date.now() + 10 * 60 * 1000; //expire after 10 min
+    this.passwordResetExpires = Date.now() + 2 * 60 * 1000; //expire after 2 min
     return resetTokenHash;
 
 }

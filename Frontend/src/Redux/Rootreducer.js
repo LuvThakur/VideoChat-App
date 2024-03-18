@@ -1,6 +1,7 @@
 import { combineReducers } from "redux";
 import storage from "redux-persist/lib/storage";
 import Sidebarreducer from './Slice/SidebarSlice';
+import AuthReducer from './Slice/AuthSlice';
 
 // Configuration for Redux Persist
 const rootPersistConfig = {
@@ -13,6 +14,7 @@ const rootPersistConfig = {
 //  here combinerReducers are used to combine all reduers into single rootReducer
 const rootReducer = combineReducers({
     appe: Sidebarreducer,
+    auth: AuthReducer
 })
 
 export { rootPersistConfig, rootReducer }

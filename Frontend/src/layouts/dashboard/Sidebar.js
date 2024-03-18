@@ -9,10 +9,13 @@ import useSettings from "../../hooks/useSettings";
 import AntSwitch from "../../components/AntSwitch";
 import { Profile_Menu } from "../../data";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { SignOutUserfun } from "../../Redux/Slice/AuthSlice";
 
 const ProfileOptions = ({ handleClick, anchorEl }) => {
 
 
+    const dispatch = useDispatch();
     const open = Boolean(anchorEl);
 
     const handleClose = () => {
@@ -67,7 +70,7 @@ const ProfileOptions = ({ handleClick, anchorEl }) => {
 
                                 <MenuItem onClick={handleClose} key={index}>
 
-                                    <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} onClick={() => { Navigate(profilepath(index)) }}>
+                                    <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} onClick={() => { index == 2 ? dispatch(SignOutUserfun()) : Navigate(profilepath(index)) }}>
 
                                         <IconButton >
                                             {el.icon}

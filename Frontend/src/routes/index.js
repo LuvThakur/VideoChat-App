@@ -33,7 +33,7 @@ export default function Router() {
         },
 
         {
-          path: "forgot", element: <ForgotPassword />
+          path: "forgot-password", element: <ForgotPassword />
         },
         {
           path: "new-password", element: <Newpassword />

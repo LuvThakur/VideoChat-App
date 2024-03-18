@@ -1,9 +1,18 @@
 import { Container, Stack } from "@mui/material";
 import React from "react";
-import { Outlet } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import logo from '../../assets/Images/logo.ico';
+import { useSelector } from "react-redux";
 
 const MainLayout = () => {
+
+  // u have to use same varible which use in redux store
+  const { isLoggedIn } = useSelector((state) => (state.auth))
+
+  if (isLoggedIn) {
+    return <Navigate to="/app" />
+  }
+
   return (
     <>
       <Container maxWidth="sm">

@@ -6,6 +6,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Alert, IconButton, InputAdornment, Stack, Link, Button } from '@mui/material';
 import { Eye, EyeSlash } from 'phosphor-react';
 import { Link as RouterLink } from 'react-router-dom'
+import { useDispatch } from 'react-redux';
+import { LoginUserFun } from '../../Redux/Slice/AuthSlice';
 
 
 
@@ -24,6 +26,8 @@ const defaultValues = {
 const Login_Form = () => {
 
 
+  const dispatch = useDispatch();
+
   const [showPassword, setpassword] = useState(false);
 
   const methods = useForm({
@@ -35,7 +39,9 @@ const Login_Form = () => {
 
   const onSubmit = async (data) => {
     try {
-      console.log("call");
+
+      dispatch(LoginUserFun(data))
+
     }
     catch (error) {
       console.log("->>", error)
@@ -61,7 +67,7 @@ const Login_Form = () => {
       <Stack spacing={3}>
 
         <ReactformText name={"email"} label="Email Address" />
-        <ReactformText name={"password"}  label="Password" type={showPassword ? "text" : "password"}
+        <ReactformText name={"password"} label="Password" type={showPassword ? "text" : "password"}
 
           InputProps={{
             endAdornment: (

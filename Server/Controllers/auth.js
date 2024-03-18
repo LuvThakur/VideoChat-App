@@ -313,6 +313,11 @@ exports.resetPassword = async (req, res, next) => {
         userData.passwordResetToken = undefined;
         userData.passwordResetExpires = undefined;
 
+
+        // password change at 
+
+        userData.passwordChangesAt = Date.now();
+
         // Save the updated user object
         await userData.save({ validateBeforeSave: false });
 
@@ -333,8 +338,6 @@ exports.resetPassword = async (req, res, next) => {
         });
     }
 };
-
-
 
 
 
