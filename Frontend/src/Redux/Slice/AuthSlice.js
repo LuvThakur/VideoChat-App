@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from '../../utils/axiosMethod';
+import { func } from "prop-types";
 
 const initialState = {
     isLoggedIn: false,
@@ -18,6 +19,9 @@ const AuthSlice = createSlice({
         SignOut: (state, action) => {
             state.isLoggedIn = false;
             state.token = "";
+        },
+        Forgot: (state, action) => {
+
         }
     }
 });
@@ -38,7 +42,7 @@ export function LoginUserFun(FormData) {
                 }
             });
 
-            console.log(response); // Handle the response data here
+            // console.log(response); // Handle the response data here
             // Dispatch your success action
             dispatch(Login({ isLoggedIn: true, token: response.data.token }));
 
@@ -57,12 +61,48 @@ export function SignOutUserfun() {
     }
 }
 
-export function ForgotPasswordfun() {
+export function ForgotPasswordfun(FormData) {
 
-    return async () => {
+    return async (dispatch) => {
 
-        
+        await axios.post("/auth/forget-password",
+            { ...FormData },
+            {
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }
 
+        ).then(
+
+            (response) => console.log("resp->", response)
+
+        ).catch(
+            (error) => console.log("er->", error.response)
+        )
     }
 
+}
+
+
+export function ResetPasswordfun(FormData) {
+    return async (dispatch, getState) => {
+
+        await axios.post("/auth/reset-password", FormData, {
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then(
+
+            (response) => {
+                // console.log("new-pass", response);
+
+                // Dispatch login action if needed
+                dispatch(Login({ isLoggedIn: true, token: response.data.token }));
+            }
+        ).catch(
+            (error) =>
+                console.log("err->", error.response)
+        )
+    };
 }

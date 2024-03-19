@@ -4,6 +4,8 @@ import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import { Button, Stack } from '@mui/material';
+import { useDispatch } from 'react-redux';
+import { ForgotPasswordfun } from '../../Redux/Slice/AuthSlice';
 
 const ForgotSchema = Yup.object().shape({
     email: Yup.string().required("Email is required").email("email must be valid"),
@@ -15,6 +17,7 @@ const defaultValues = {
 
 export default function Forgot_Form() {
 
+    const dispatch = useDispatch();
     const methods = useForm(
         {
             resolver: yupResolver(ForgotSchema),
@@ -25,8 +28,10 @@ export default function Forgot_Form() {
 
     const onSubmit = async (data) => {
         try {
-            console.log("forgot");
-            
+            console.log("forgot", data);
+
+            dispatch(ForgotPasswordfun(data));
+
         }
         catch (error) {
             console.log("->>", error)

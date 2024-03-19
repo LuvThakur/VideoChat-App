@@ -37,6 +37,9 @@ export default function Router() {
         },
         {
           path: "new-password", element: <Newpassword />
+        },
+        {
+          path: "verify-otp", element: <Verify />
         }
       ]
     }
@@ -78,29 +81,33 @@ const Profile = Loadable(
 
 const Group = Loadable(
   lazy(() => import("../pages/dashboard/Group"))
-)
+);
 
 const CallLog = Loadable(
   lazy(() => import("../pages/dashboard/CallLog"))
-)
+);
 const Login = Loadable(
   lazy(() => import("../pages/auth/Login"))
-)
+);
 
 const Register = Loadable(
   lazy(() => import("../pages/auth/Register"))
-)
+);
 
 const ForgotPassword = Loadable(
   lazy(() => import("../pages/auth/ForgotPassword"))
-)
+);
 
 const Newpassword = Loadable(
   lazy(() => import("../pages/auth/NewPassword"))
-)
+);
 
 const Setting = Loadable(
   lazy(() => import("../pages/dashboard/Setting")),
+);
+
+const Verify = Loadable(
+  lazy(() => import("../pages/auth/Verify"))
 );
 
 

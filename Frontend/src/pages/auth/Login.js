@@ -21,8 +21,8 @@ export default function Login() {
                     </Link>
 
                 </Stack>
-                <Login_Form />
 
+                <Login_Form />
                 <Social_Media />
 
             </Stack>

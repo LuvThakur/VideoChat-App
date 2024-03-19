@@ -5,20 +5,28 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import { Eye, EyeSlash } from 'phosphor-react';
 import { Button, IconButton, InputAdornment, Stack, Alert } from '@mui/material';
+import { useDispatch } from 'react-redux';
+import { ResetPasswordfun } from '../../Redux/Slice/AuthSlice';
+import { useSearchParams } from 'react-router-dom'
 
 export default function NewPassword_Form() {
+
+
+    const dispatch = useDispatch();
+
+    const [queryParameters] = useSearchParams();
 
     const [showPassword, setPassword] = useState(false);
     const [showPasswordconfirm, setPasswordconfirm] = useState(false);
 
     const PasswordSchema = Yup.object().shape({
-        password: Yup.string().required("Password is required").min(6, "Minimum six characters required"),
-        confirmpassword: Yup.string().required("Confirm Password is required").min(6, "Minimum six characters required")
+        Password: Yup.string().required("Password is required").min(6, "Minimum six characters required"),
+        ConfirmPassword: Yup.string().required("Confirm Password is required").min(6, "Minimum six characters required")
     });
 
     const defaultValues = {
-        password: "",
-        confirmpassword: ""
+        Password: "",
+        ConfirmPassword: ""
     }
 
     const methods = useForm({
@@ -37,12 +45,22 @@ export default function NewPassword_Form() {
 
     const onSubmit = async (data) => {
         try {
-            console.log("gernrate");
-        }
-        catch (error) {
-            console.log("->>", error)
-            reset();
-            setError("aftersubmit", { ...error, message: error.message })
+            const token = queryParameters.get("token");
+            if (!token) {
+                throw new Error("Token is missing");
+            }
+
+            // Check if Password and ConfirmPassword match
+            if (data.Password !== data.ConfirmPassword) {
+                throw new Error("Passwords do not match");
+            }
+
+
+            // console.log("", token);
+            dispatch(ResetPasswordfun({ ...data, Reqtoken: token }));
+        } catch (error) {
+            console.error("Error submitting form:", error);
+            setError("aftersubmit", { message: error.message });
         }
     }
 
@@ -54,8 +72,8 @@ export default function NewPassword_Form() {
                 {!!errors.aftersubmit && <Alert severity='error'>{errors.aftersubmit.message}</Alert>}
             </Stack>
             <Stack spacing={2}>
-                
-                <ReactformText name={"password"} label="Password" type={showPassword ? "text" : "password"}
+
+                <ReactformText name={"Password"} label="Password" type={showPassword ? "text" : "Password"}
 
                     InputProps={{
                         endAdornment: (
@@ -70,7 +88,7 @@ export default function NewPassword_Form() {
                 />
 
 
-                <ReactformText name="confirmpassword" label="ConfirmPassword" type={showPasswordconfirm ? 'text' : 'password'}
+                <ReactformText name="ConfirmPassword" label="ConfirmPassword" type={showPasswordconfirm ? 'text' : 'Password'}
 
                     InputProps={{
                         endAdornment: (

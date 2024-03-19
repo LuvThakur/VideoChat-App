@@ -148,7 +148,7 @@ exports.sendOtp = async (req, res, next) => {
 
         // Send OTP email
         await sendEmail({
-            from: 'luvthakur262001@gmail.com', // Replace with a valid email
+            from: 'luvpratapsinghcsb91@gmail.com', // Replace with a valid email
             to: userEmail,
             subject: "OTP for Video-Chat-App",
             html: otpTemplate(user.firstname, newOtp),
@@ -243,15 +243,26 @@ exports.forgetPassword = async (req, res, next) => {
 
     await userdata.save({ validateBeforeSave: false });
 
-    console.log("User-Data ", userdata);
-    console.log("reset->", resetToken);
+    // console.log("User-Data ", userdata);
+    // console.log("reset->", resetToken);
 
-    // url which send an link of resetToken
-    const Url = `https://chat.com/auth/forget-password/?code=${resetToken}`;
 
     try {
 
+
+        const userEmail = userdata.email;
+
+        // url which send an link of resetToken
+        const Url = `http://localhost:3000/auth/new-password/?token=${resetToken}`;
+
         // make send email with reset url functionality
+        await sendEmail({
+            from: 'luvpratapsinghcsb91@gmail.com', // Replace with a valid email
+            to: userEmail,
+            subject: "Reset Password for Video-Chat-App",
+            html: otpTemplate(userdata.firstname, Url),
+            attachments: [],
+        });
 
         return res.status(200).json({
             status: "Success",
@@ -277,7 +288,7 @@ exports.forgetPassword = async (req, res, next) => {
 
 
 exports.resetPassword = async (req, res, next) => {
-    const { Password, ConfirmPassword, Reqtoken } = req.body; // Extract password and confirmPassword
+    const { Password, ConfirmPassword,Reqtoken } = req.body; // Extract password and confirmPassword
 
 
     try {
@@ -287,8 +298,7 @@ exports.resetPassword = async (req, res, next) => {
             passwordResetExpires: { $gt: Date.now() }
         });
 
-        console.log("User-Data ", userData);
-
+       
         // If no user found, token is invalid or expired
         if (!userData) {
             return res.status(400).json({

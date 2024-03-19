@@ -84,7 +84,7 @@ const Login_Form = () => {
       </Stack>
 
       <Stack alignItems={'flex-end'} my={2} >
-        <Link to="/auth/forgot" variant='subtitle2'
+        <Link to="/auth/forgot-password" variant='subtitle2'
           underline="always" component={RouterLink}>
           forgot password
         </Link>
