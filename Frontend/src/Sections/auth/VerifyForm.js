@@ -1,10 +1,14 @@
 import React from 'react'
-import { FormProvider, ReactformText } from '../../Hook_Form/Index';
+import { FormProvider, ReactVerifyForm } from '../../Hook_Form/Index';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Button ,Stack} from '@mui/material';
+import { Button, Stack } from '@mui/material';
 import { useForm } from 'react-hook-form';
 
+import { useDispatch, useSelector } from "react-redux";
+
+import { useRef } from 'react';
+import { VerifyOtpfun } from '../../Redux/Slice/AuthSlice';
 
 
 const VerfiySchema = Yup.object().shape({
@@ -31,6 +35,9 @@ const defaultValues = {
 
 const VerifyForm = () => {
 
+    const dispatch = useDispatch();
+
+    const { email } = useSelector((state) => state.auth);
 
     const methods = useForm({
         resolver: yupResolver(VerfiySchema),
@@ -38,12 +45,22 @@ const VerifyForm = () => {
     });
 
 
-    const { reset, setError, handleSubmit, formState: { errors } } = methods;
+    const codesRef = useRef(null);
+
+    const { reset, setError, handleSubmit} = methods;
 
 
     const onSubmit = async (data) => {
 
         try {
+
+            console.log("otp", data);
+
+            dispatch(VerifyOtpfun({
+                email,
+                otp: `${data.code1}${data.code2}${data.code3}${data.code4}${data.code5}${data.code6}`
+            }
+            ));
 
         }
         catch (error) {
@@ -57,15 +74,17 @@ const VerifyForm = () => {
 
 
     return (
-        <FormProvider methods={methods} resolver={yupResolver(VerfiySchema)} defaultValues={defaultValues} onSubmit={handleSubmit(onSubmit)}>
-
+        <FormProvider methods={methods} resolver={yupResolver(VerfiySchema)} defaultValues={defaultValues} onSubmit={handleSubmit(onSubmit)} >
             <Stack spacing={3}>
-
+                <Stack>
+                    <ReactVerifyForm keyname="code" input={["code1", "code2", "code3", "code4", "code5", "code6",]}  />
+                </Stack>
+                <Stack>
+                    <Button fullWidth size='large' variant='contained' type='submit' sx={{ bgcolor: 'text.primary', color: (theme) => theme.palette.mode === 'light' ? "common.white" : 'grey.800' }}  >
+                        Verify
+                    </Button>
+                </Stack>
             </Stack>
-
-            <Button fullWidth size='large' variant='contained' type='submit' sx={{ bgcolor: 'text.primary', color: (theme) => theme.palette.mode === 'light' ? "common.white" : 'grey.800' }}  >
-                Verify
-            </Button>
         </FormProvider>
     )
 }

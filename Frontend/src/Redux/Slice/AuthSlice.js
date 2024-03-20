@@ -1,17 +1,25 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from '../../utils/axiosMethod';
-import { func } from "prop-types";
 
 const initialState = {
     isLoggedIn: false,
     token: "",
-    isLoading: false
+    email: "",
+    isLoading: false,
+    error: false,
 }
 
 const AuthSlice = createSlice({
     name: "auth",
     initialState,
     reducers: {
+
+
+        LoadingBar: (state, action) => {
+            state.isLoading = action.payload.isLoading;
+            state.error = action.payload.error;
+        },
+
         Login: (state, action) => {
             state.isLoggedIn = action.payload.isLoggedIn;
             state.token = action.payload.token;
@@ -19,10 +27,13 @@ const AuthSlice = createSlice({
         SignOut: (state, action) => {
             state.isLoggedIn = false;
             state.token = "";
+            state.email="";
         },
-        Forgot: (state, action) => {
 
+        UpdateRegisterEmail: (state, action) => {
+            state.email = action.payload.email;
         }
+
     }
 });
 
@@ -105,4 +116,78 @@ export function ResetPasswordfun(FormData) {
                 console.log("err->", error.response)
         )
     };
+}
+
+
+export function Registerfun(FormData) {
+
+    return async (dispatch, getState) => {
+
+        dispatch(AuthSlice.actions.LoadingBar({ isLoading: true, error: false }));
+
+        await axios.post("/auth/register", FormData,
+            {
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }
+        ).then(
+
+            (response) => {
+                console.log("Reg-pass", response);
+
+                // Dispatch login action if needed
+                dispatch(AuthSlice.actions.UpdateRegisterEmail({ email: FormData.email }));
+                dispatch(AuthSlice.actions.LoadingBar({ isLoading: false, error: false }));
+
+            }
+        ).catch(
+            (error) => {
+                console.log("err->", error.response)
+
+                dispatch(AuthSlice.actions.LoadingBar({ isLoading: false, error: true }));
+            }
+
+
+        ).finally(
+
+            () => {
+
+                if (!getState().auth.error) {
+                    console.log("fin2");
+                    window.location.href = "/auth/verify-otp";
+                }
+            }
+
+        )
+    }
+
+}
+
+
+export function VerifyOtpfun(FormData) {
+
+    return async (dispatch, getState) => {
+
+        console.log("first", FormData);
+        await axios.post("/auth/verify-otp", FormData,
+            {
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }
+        ).then(
+
+            (response) => {
+                console.log("new-pass", response);
+
+                // Dispatch login action if needed
+                dispatch(Login({ isLoggedIn: true, token: response.data.token }));
+            }
+        ).catch(
+            (error) =>
+                console.log("err->", error.response)
+        )
+
+    }
 }

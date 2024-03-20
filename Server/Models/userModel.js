@@ -131,23 +131,27 @@ userSchema.pre("save", async function (next) {
     }
 });
 
+/*
 // Hash the ConfirmPassword before saving to the database
 userSchema.pre("save", async function (next) {
     try {
+        // Only hash confirmPassword when passwordResetToken is set
+        if (this.passwordResetToken) {
+            if (!this.confirmPassword) {
+                return next(new Error("ConfirmPassword is required"))
+            }
 
-        if (!this.confirmPassword) {
-            return next(new Error("ConfirmPassword is required"))
+            const saltRounds = 10;
+            const hashedPassword = await bcrypt.hash(this.confirmPassword, saltRounds);
+            this.confirmPassword = hashedPassword;
         }
-
-        const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(this.confirmPassword, saltRounds);
-        this.confirmPassword = hashedPassword;
         next();
     } catch (error) {
         return next(error);
     }
-
 });
+
+*/
 
 userSchema.methods.correctPassword = async function (storePassword, userPassword) {
 

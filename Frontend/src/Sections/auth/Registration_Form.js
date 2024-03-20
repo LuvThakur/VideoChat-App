@@ -3,28 +3,32 @@ import * as  Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import { FormProvider, ReactformText } from '../../Hook_Form/Index';
-import { Typography,  Stack, InputAdornment, IconButton, Alert, Button, Link } from '@mui/material';
+import {  Stack, InputAdornment, IconButton, Alert, Button } from '@mui/material';
 import { Eye, EyeSlash } from 'phosphor-react';
 import { useForm } from 'react-hook-form';
 
+import { useDispatch } from "react-redux";
+import { Registerfun } from '../../Redux/Slice/AuthSlice';
+
 
 const RegisterSchema = Yup.object().shape({
-    Fname: Yup.string().required("First Name is required"),
-    Lname: Yup.string().required("Last name is required"),
+    firstname: Yup.string().required("First Name is required"),
+    lastname: Yup.string().required("Last name is required"),
     email: Yup.string().required("Email is require").email("Email must be valid address"),
     password: Yup.string().required("Password is required")
 })
 
 
 const defaultValues = {
-    Fname: "Luv",
-    Lname: "Thakur",
+    firstname: "Luv",
+    lastname: "Thakur",
     email: "xyz@gmail.com",
     password: "abc1234"
 }
 
 function Registration_Form() {
 
+    const dispatch = useDispatch();
 
     const [showPassword, setpassword] = useState(false);
 
@@ -43,7 +47,9 @@ function Registration_Form() {
 
     const onSubmit = async (data) => {
         try {
-            console.log("call");
+            console.log("Register", data);
+
+            dispatch(Registerfun(data));
         }
         catch (error) {
             console.log("->>", error)
@@ -66,12 +72,12 @@ function Registration_Form() {
 
             >
                 <Stack direction={'row'} justifyContent={'space-between'} >
-                    <ReactformText name='Fname' label="First Name"
+                    <ReactformText name='firstname' label="First Name"
 
                         sx={{ width: '49%' }}
 
                     />
-                    <ReactformText name='Lname' label="Last Name"
+                    <ReactformText name='lastname' label="Last Name"
                         sx={{ width: '49%' }}
 
                     />

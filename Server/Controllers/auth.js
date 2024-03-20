@@ -21,6 +21,7 @@ const signToken = (userId) => jwt.sign({ userId }, process.env.JWT_SECRET);
 const filterField = require("../Utils/FiltersObjFields");
 
 const otpTemplate = require("../Service/Otptemplate");
+const passresetemplate = require("../Service/PassResetTemplate");
 
 
 
@@ -31,6 +32,8 @@ exports.register = async (req, res, next) => {
     const { firstname, lastname, email, password } = req.body;
 
     const filterbody = filterField(req.body, "firstname", "lastname", "email", "password");
+
+
 
     const options = {
         new: true,
@@ -59,7 +62,7 @@ exports.register = async (req, res, next) => {
         req.body.userId = req.userId; // Assuming you need this in sendOtp
         next(); // Call next here
     } catch (error) {
-        console.error(error);
+        console.error("red-err", error);
         res.status(500).json({
             status: "error",
             message: "Internal Server Error"
@@ -260,7 +263,7 @@ exports.forgetPassword = async (req, res, next) => {
             from: 'luvpratapsinghcsb91@gmail.com', // Replace with a valid email
             to: userEmail,
             subject: "Reset Password for Video-Chat-App",
-            html: otpTemplate(userdata.firstname, Url),
+            html: passresetemplate(userdata.firstname, Url),
             attachments: [],
         });
 
@@ -288,7 +291,7 @@ exports.forgetPassword = async (req, res, next) => {
 
 
 exports.resetPassword = async (req, res, next) => {
-    const { Password, ConfirmPassword,Reqtoken } = req.body; // Extract password and confirmPassword
+    const { Password, ConfirmPassword, Reqtoken } = req.body; // Extract password and confirmPassword
 
 
     try {
@@ -298,7 +301,7 @@ exports.resetPassword = async (req, res, next) => {
             passwordResetExpires: { $gt: Date.now() }
         });
 
-       
+
         // If no user found, token is invalid or expired
         if (!userData) {
             return res.status(400).json({
