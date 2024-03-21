@@ -142,7 +142,7 @@ exports.sendOtp = async (req, res, next) => {
 
         const newOtp = otpGenerator.generate(6, { digits: true, lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false });
 
-        const otpExpiryTime = Date.now() + 10 * 60 * 1000;
+        const otpExpiryTime = Date.now() + 2 * 60 * 1000;
 
         // Update user with new OTP and expiry time
         await User.findByIdAndUpdate(userId, { otp: newOtp, otpExpiry: otpExpiryTime });
@@ -210,7 +210,7 @@ exports.verifiedOtp = async (req, res, next) => {
     // const isOtpMatch = await bcrypt.compare(otp,userInfo.otp);
     const isOtpMatch = (otp === userInfo.otp);
 
-    console.log("Is OTP Match?", isOtpMatch);
+    // console.log("Is OTP Match?", isOtpMatch);
 
     if (!isOtpMatch) {
         return res.status(400).json({
@@ -224,8 +224,6 @@ exports.verifiedOtp = async (req, res, next) => {
 
     res.json({ message: "OTP verified successfully" });
 };
-
-
 
 
 exports.forgetPassword = async (req, res, next) => {
@@ -318,21 +316,23 @@ exports.resetPassword = async (req, res, next) => {
             });
         }
 
+
         // Update user's password after submit request
         userData.password = Password;
-        userData.confirmPassword = ConfirmPassword;
+        // userData.confirmPassword = ConfirmPassword;
+
 
         // Clear password fields from the object
         userData.passwordResetToken = undefined;
         userData.passwordResetExpires = undefined;
 
-
         // password change at 
-
         userData.passwordChangesAt = Date.now();
 
+        console.log("save");
         // Save the updated user object
         await userData.save({ validateBeforeSave: false });
+
 
         // Generate JWT token for the user
         const token = signToken(userData._id);

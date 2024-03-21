@@ -6,7 +6,7 @@ function otpTemplate(firstname, OtpCode) {
             <div style="background-color: #fff; padding: 10px 20px; border-radius: 5px; box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); margin-bottom: 20px;">
                 <h2 style="color: #333; font-size: 24px; margin: 0;">${OtpCode}</h2>
             </div>
-            <p style="color: #555; font-size: 16px;">This OTP is valid for 10 minutes.</p>
+            <p style="color: #555; font-size: 16px;">This OTP is valid for 2 minutes.</p>
             <p style="color: #555; font-size: 16px;">If you did not request this OTP, please ignore this message.</p>
             <p style="color: #555; font-size: 16px;">Thank you!</p>
         </div>

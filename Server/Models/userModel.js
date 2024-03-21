@@ -131,7 +131,7 @@ userSchema.pre("save", async function (next) {
     }
 });
 
-/*
+
 // Hash the ConfirmPassword before saving to the database
 userSchema.pre("save", async function (next) {
     try {
@@ -151,7 +151,6 @@ userSchema.pre("save", async function (next) {
     }
 });
 
-*/
 
 userSchema.methods.correctPassword = async function (storePassword, userPassword) {
 
