@@ -1,5 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from '../../utils/axiosMethod';
+import { ShowAlertSnackbar } from "./SidebarSlice";
+import { date } from "yup";
 
 const initialState = {
     isLoggedIn: false,
@@ -27,7 +29,7 @@ const AuthSlice = createSlice({
         SignOut: (state, action) => {
             state.isLoggedIn = false;
             state.token = "";
-            state.email="";
+            state.email = "";
         },
 
         UpdateRegisterEmail: (state, action) => {
@@ -53,12 +55,19 @@ export function LoginUserFun(FormData) {
                 }
             });
 
-            // console.log(response); // Handle the response data here
+            console.log(response); // Handle the response data here
+
             // Dispatch your success action
             dispatch(Login({ isLoggedIn: true, token: response.data.token }));
 
+            dispatch(ShowAlertSnackbar(response.data.message, "success"));
+
+
         } catch (error) {
             console.log(error);
+
+            dispatch(ShowAlertSnackbar(error.message, "warning"));
+
             // Dispatch your error action, or handle errors as needed
         }
     }
@@ -69,6 +78,8 @@ export function SignOutUserfun() {
     return async (dispatch) => {
 
         dispatch(SignOut())
+        dispatch(ShowAlertSnackbar("SingOut Successfully", "success"));
+
     }
 }
 
@@ -86,10 +97,17 @@ export function ForgotPasswordfun(FormData) {
 
         ).then(
 
-            (response) => console.log("resp->", response)
-
+            (response) => {
+                console.log("resp->", response)
+                dispatch(ShowAlertSnackbar(response.data.message, "success"));
+            }
         ).catch(
-            (error) => console.log("er->", error.response)
+            (error) => {
+                console.log("er->", error.response)
+
+                dispatch(ShowAlertSnackbar(error.message, "warning"));
+
+            }
         )
     }
 
@@ -106,14 +124,19 @@ export function ResetPasswordfun(FormData) {
         }).then(
 
             (response) => {
-                // console.log("new-pass", response);
+                console.log("new-pass", response);
 
                 // Dispatch login action if needed
                 dispatch(Login({ isLoggedIn: true, token: response.data.token }));
+                dispatch(ShowAlertSnackbar(response.data.message, "success"));
+
             }
         ).catch(
-            (error) =>
+            (error) => {
                 console.log("err->", error.response)
+                dispatch(ShowAlertSnackbar(error.message, "warning"));
+
+            }
         )
     };
 }
@@ -139,6 +162,8 @@ export function Registerfun(FormData) {
                 // Dispatch login action if needed
                 dispatch(AuthSlice.actions.UpdateRegisterEmail({ email: FormData.email }));
                 dispatch(AuthSlice.actions.LoadingBar({ isLoading: false, error: false }));
+                dispatch(ShowAlertSnackbar(response.data.message, "success"));
+
 
             }
         ).catch(
@@ -146,6 +171,8 @@ export function Registerfun(FormData) {
                 console.log("err->", error.response)
 
                 dispatch(AuthSlice.actions.LoadingBar({ isLoading: false, error: true }));
+                dispatch(ShowAlertSnackbar(error.message, "warning"));
+
             }
 
 
@@ -183,10 +210,13 @@ export function VerifyOtpfun(FormData) {
 
                 // Dispatch login action if needed
                 dispatch(Login({ isLoggedIn: true, token: response.data.token }));
+                dispatch(ShowAlertSnackbar(response.data.message, "success"));
             }
         ).catch(
-            (error) =>
+            (error) => {
                 console.log("err->", error.response)
+                dispatch(ShowAlertSnackbar(error.message, "warning"));
+            }
         )
 
     }

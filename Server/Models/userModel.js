@@ -135,12 +135,8 @@ userSchema.pre("save", async function (next) {
 // Hash the ConfirmPassword before saving to the database
 userSchema.pre("save", async function (next) {
     try {
-        // Only hash confirmPassword when passwordResetToken is set
-        if (this.passwordResetToken) {
-            if (!this.confirmPassword) {
-                return next(new Error("ConfirmPassword is required"))
-            }
-
+        // Only hash confirmPassword when passwordResetToken is set and confirmPassword is provided
+        if (this.isModified("password") && this.passwordResetToken && this.confirmPassword) {
             const saltRounds = 10;
             const hashedPassword = await bcrypt.hash(this.confirmPassword, saltRounds);
             this.confirmPassword = hashedPassword;
