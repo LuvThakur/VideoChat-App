@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from '../../utils/axiosMethod';
 import { ShowAlertSnackbar } from "./SidebarSlice";
-import { date } from "yup";
 
 const initialState = {
     isLoggedIn: false,

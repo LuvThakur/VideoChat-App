@@ -44,3 +44,31 @@ exports.update = async (req, res, next) => {
 }
 
 
+exports.getUsers = async (req, res, next) => {
+
+    const all_users = User.find({
+        verified: true,
+
+    }).select("firstname lastname _id")
+
+
+    // get an protected request
+
+    const this_user = req.user;
+
+
+    // remaing users whose are not friend and exlude me
+
+    const remaining_users = (await all_users).filter(
+        (user) => !this_user.friends.include(user._id) && user._id.toString() !== this_user._id.toString()
+    );
+
+
+    res.status(200).json({
+
+        status: "success",
+        data: remaining_users,
+        message: "Users found successfully"
+    })
+
+}

@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
 const crypto = require('crypto');
+const { type } = require('os');
 
 const { Schema } = mongoose;
 
@@ -73,7 +74,16 @@ const userSchema = new Schema({
     },
     otpExpiry: {
         type: Date
-    }
+    },
+    socket_id: {
+        type: String
+    },
+    friendRequest: [
+        {
+            type: mongoose.Schema.ObjectId,
+            ref: 'User'
+        }
+    ]
 
 })
 
