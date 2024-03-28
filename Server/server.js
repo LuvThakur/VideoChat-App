@@ -69,7 +69,7 @@ function startServer() {
     })
 
     // listen io server for real-time connection
-
+    // When a client connects to the server, socket.io performs a handshake to establish the WebSocket connection.
 
     io.on("connection", async (socket) => {
 
@@ -90,7 +90,8 @@ function startServer() {
         // event listners- >>
 
         //user A send an  request to any user
-
+        // to->id of  whom reuest sending
+        // from -> sender id
         socket.on("friend__request", async (data) => {
 
             console.log(data.to); //{to : id (1234)}
@@ -99,12 +100,13 @@ function startServer() {
 
 
             io.to(to.socket_id).emit("new_friend_request", {
-// 
+                // 
             })
         })
 
         socket.on('disconnect', () => {
             console.log('user disconnected');
+
         });
     });
 

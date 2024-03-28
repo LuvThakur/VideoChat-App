@@ -72,3 +72,39 @@ exports.getUsers = async (req, res, next) => {
     })
 
 }
+
+
+exports.getFriends = async (req, res, next) => {
+
+
+    // get an protected request
+
+    const this_user = req.user;
+
+    const friends = await User.findById(this_user._id).populate("friends", "firstname lastname _id");
+
+
+    res.status(200).json({
+        status: "success",
+        data: friends,
+        message: "Friends found successfully!"
+    })
+
+}
+
+
+exports.getRequests = async (req, res, next) => {
+    // get an protected request
+
+    const this_user = req.user;
+
+    const requests = await FriendRequest.find({ recipient: this_user._id }).populate("sender", "firstname lastname _id");
+
+
+    res.status(200).json({
+        status: "success",
+        data: requests,
+        message: "FriendsRequest found successfully!"
+    })
+
+}

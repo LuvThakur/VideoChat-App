@@ -78,7 +78,7 @@ const userSchema = new Schema({
     socket_id: {
         type: String
     },
-    friendRequest: [
+    friends: [
         {
             type: mongoose.Schema.ObjectId,
             ref: 'User'

@@ -26,6 +26,6 @@ const requestSchema = new Schema({
 
 const User = mongoose.model('user', userSchema); // Model name 'user'
 
-const UserRequest = mongoose.model('userequest', requestSchema);
+const FriendRequest = mongoose.model('FriendRequest', requestSchema);
 
-module.exports = UserRequest;
+module.exports = FriendRequest;
