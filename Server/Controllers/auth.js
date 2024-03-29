@@ -109,6 +109,7 @@ exports.login = async (req, res, next) => {
         res.status(200).json({
             status: "success",
             token,
+            user_id: userDoc._id,
             message: "Logged in successfully"
         });
     } catch (error) {
@@ -222,7 +223,15 @@ exports.verifiedOtp = async (req, res, next) => {
 
     await userInfo.save({ new: true, validateModifiedOnly: true });
 
-    res.json({ message: "OTP verified successfully" });
+
+
+    // Generate JWT token for the user
+    const token = signToken(userInfo._id);
+
+    res.json({
+        token: userInfo._id,
+        message: "OTP verified successfully"
+    });
 };
 
 

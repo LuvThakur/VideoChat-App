@@ -61,6 +61,8 @@ export function LoginUserFun(FormData) {
 
             dispatch(ShowAlertSnackbar(response.data.message, "success"));
 
+            window.localStorage.setItem("user_id", response.data.user_id);
+
 
         } catch (error) {
             console.log(error);
@@ -76,8 +78,10 @@ export function LoginUserFun(FormData) {
 export function SignOutUserfun() {
     return async (dispatch) => {
 
+        window.localStorage.removeItem("user_id");
         dispatch(SignOut())
         dispatch(ShowAlertSnackbar("SingOut Successfully", "success"));
+
 
     }
 }
@@ -208,9 +212,11 @@ export function VerifyOtpfun(FormData) {
                 console.log("new-pass", response);
 
                 // Dispatch login action if needed
+                window.localStorage.setItem("user_id", response.data.user_id);
                 dispatch(Login({ isLoggedIn: true, token: response.data.token }));
                 dispatch(ShowAlertSnackbar(response.data.message, "success"));
             }
+
         ).catch(
             (error) => {
                 console.log("err->", error.response)

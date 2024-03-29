@@ -24,7 +24,6 @@ const requestSchema = new Schema({
 
 });
 
-const User = mongoose.model('user', userSchema); // Model name 'user'
 
 const FriendRequest = mongoose.model('FriendRequest', requestSchema);
 

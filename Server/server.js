@@ -4,6 +4,7 @@ const app = require('./app');
 
 const mongoose = require('mongoose');
 const User = require('./Models/userModel');
+const FriendRequest = require('./Models/friendRequest');
 
 // Load environment variables from .env file
 require('dotenv').config();
@@ -82,7 +83,7 @@ function startServer() {
 
         console.log(`User connected on ${socket_id}`)
 
-        if (user_id) {
+        if (Boolean(user_id)) {
             await User.findByIdAndUpdate(user_id, { socket_id });
         }
 
@@ -96,17 +97,71 @@ function startServer() {
 
             console.log(data.to); //{to : id (1234)}
 
-            const to = await User.findById(data.to);
+            const to_User = await User.findById(data.to).select("socket_id");
+            const from_User = await User.findById(data.from).select("socket_id");
 
+            // create frind request
 
-            io.to(to.socket_id).emit("new_friend_request", {
-                // 
+            await FriendRequest.create({
+                sender: data.from,
+                recipient: data.to,
             })
-        })
 
-        socket.on('disconnect', () => {
+
+            io.to(to_User.socket_id).emit("new_friend_request", {
+                // 
+
+                message: "New frnd Request  Received"
+            });
+
+            io.to(from_User.socket_id).emit("request_sent", {
+                // 
+
+                message: "New frnd Request  sent succes"
+            });
+
+
+
+        });
+
+        socket.on("accept_request", async (data) => {
+            console.log(data);
+
+            const request_doc = await FriendRequest.findById(data.request_id);
+            console.log(request_doc)
+
+            // request_id
+
+            const sender = await User.findById(request_doc.sender);
+            const receiver = await User.findById(request_doc.receiver);
+
+            sender.friends.push(request_doc.recipient);
+            receiver.friends.push(request_doc.sender);
+
+            await receiver.save({ new: true, validateModifiedOnly: true });
+
+            await FriendRequest.findByIdAndDelete(data.request_id);
+
+            io.to(sender.socket_id).emit("request accept", {
+                message: "Frnd Req accept"
+            });
+
+            io.to(receiver.socket_id).emit("request accept", {
+                message: "Frnd Req accept"
+            });
+
+
+        });
+
+
+        // socket.on('disconnect', () => {
+        //     console.log('user disconnected');
+
+        // });
+
+        socket.on('end', () => {
             console.log('user disconnected');
-
+            socket.disconnect(0);
         });
     });
 
