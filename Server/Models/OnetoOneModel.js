@@ -33,11 +33,16 @@ const oneToOneMessageSchema = new mongoose.Schema({
                 type: Date,
                 default: Date.now()
             },
-            
+
             text: {
                 type: String
             },
 
+            file: {
+                type:String
+            },
+
+            
 
         }
     ]

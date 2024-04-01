@@ -6,6 +6,8 @@ const mongoose = require('mongoose');
 const User = require('./Models/userModel');
 const FriendRequest = require('./Models/friendRequest');
 
+const path = require('path');
+
 // Load environment variables from .env file
 require('dotenv').config();
 
@@ -84,7 +86,7 @@ function startServer() {
         console.log(`User connected on ${socket_id}`)
 
         if (Boolean(user_id)) {
-            await User.findByIdAndUpdate(user_id, { socket_id });
+            await User.findByIdAndUpdate(user_id, { socket_id, status: "Online" });
         }
 
 
@@ -151,7 +153,53 @@ function startServer() {
             });
 
 
+
+
+
+
         });
+
+
+        // handle link/text msg
+
+        socket.on("text_message", (data) => {
+            console.log("received msg", data)
+
+
+            // data :{to , from , text}
+            // create new conversat , add new msg, 
+            // save to db
+            // emit incomi msg - to user
+            // emit outgo msg from user
+        });
+
+
+
+        socket.on("file_message", (data) => {
+
+            console.log("received msg", data)
+
+
+            // data :{to , from , text ,file}
+
+            // get file extension
+
+            const fileExtension = path.extname(data.file.name);
+
+            // genert unique fil name
+
+            const genFilename = `${Date.now()}_${Math.floor(Math.random() * 1000)}_${fileExtension}`;
+
+
+            // upload to aws s3 
+
+            // create new conversat , add new , 
+            // save to db
+            // emit incomi msg -> to user
+            // emit outgo msg <- from user
+
+        });
+
 
 
         // socket.on('disconnect', () => {
@@ -159,8 +207,16 @@ function startServer() {
 
         // });
 
-        socket.on('end', () => {
+        socket.on('end', async (data) => {
             console.log('user disconnected');
+
+            // find user_id and set status offline
+            if (data.user_id) {
+
+                await User.findByIdAndUpdate(data.user_id, { status: "Offline" })
+            }
+
+            // todo for  brodacast connection
             socket.disconnect(0);
         });
     });
