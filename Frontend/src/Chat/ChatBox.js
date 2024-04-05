@@ -1,19 +1,32 @@
 import React from 'react'
-import { Stack, Box,Badge, Avatar, Typography} from '@mui/material';
+import { Stack, Box, Badge, Avatar, Typography } from '@mui/material';
 import { faker } from '@faker-js/faker';
 import { useTheme } from '@emotion/react'
 import StyledBadge from '../components/StyleBadge';
+import { useDispatch } from 'react-redux';
+import { DecideConversation } from '../Redux/Slice/SidebarSlice';
 
 const ChatBox = ({ id, img, name, msg, time, unread, online }) => {
 
     const theme = useTheme();
 
+    const dispatch = useDispatch();
+
+    const handleClick = () => {
+        dispatch(DecideConversation({ room_id: id }));
+    }
     return (
-        <Box p={2} sx={{
-            width: '100%',
-            background: theme.palette.mode === 'light' ? '#EAF2FE' : theme.palette.background.default,
-            borderRadius: '8px',
-        }}>
+        <Box
+
+            onClick={handleClick}
+
+            p={2}
+            sx={{
+
+                width: '100%',
+                background: theme.palette.mode === 'light' ? '#EAF2FE' : theme.palette.background.default,
+                borderRadius: '8px',
+            }}>
             <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} >
                 <Stack direction={'row'} spacing={2}>
 

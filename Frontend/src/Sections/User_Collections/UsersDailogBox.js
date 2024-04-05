@@ -3,6 +3,7 @@ import { Dialog, Typography, Stack, Tabs, Tab, DialogContent } from '@mui/materi
 import { useDispatch, useSelector } from "react-redux";
 import { FetchFriendRequests, FetchFriends, FetchUsers } from '../../Redux/Slice/SidebarSlice';
 import { useEffect } from 'react';
+import { FriendRequestComponent, UserComponent, UserFriendsComponent } from '../../components/User_Friends';
 
 
 const UserLists = () => {
@@ -21,7 +22,7 @@ const UserLists = () => {
 
                 users.map((el, idx) => {
                     // RenderCompnent
-                    return <> </>
+                    return <UserComponent key={el._id} {...el} />
                 })
             }
 
@@ -46,7 +47,7 @@ const FriendsLists = () => {
             {
                 friends.map((el, idx) => {
                     // frind compent
-                    return <> </>
+                    return <UserFriendsComponent key={el._id} {...el} />
                 })
             }
 
@@ -73,8 +74,11 @@ const FriendRequestsLists = () => {
         <>
             {
                 friendRequests.map((el, idx) => {
+
+                    // el struture el ={  request_id , sender ,receiver}
+                    // el struture el ={  _id , {_id ,firstname,lastname ,img , status} ,}
                     // frindReq compent
-                    return <> </>
+                    return <FriendRequestComponent key={el._id} {...el.sender} id={el._id} />
                 })
             }
 

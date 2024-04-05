@@ -64,26 +64,38 @@ function startServer() {
 
 
 
+
     // port 
-    const port = process.env.PORT || 8000;
+    const port = process.env.PORT || 5000;
 
     server.listen(port, () => {
         console.log(`Server Running at port ${port}`);
     })
 
+
+
+
+    // io.on('connection', (socket) => {
+    //     console.log('A user connected');
+    //     // Your socket.io event handlers go here
+    // });
+
+
     // listen io server for real-time connection
     // When a client connects to the server, socket.io performs a handshake to establish the WebSocket connection.
+
 
     io.on("connection", async (socket) => {
 
 
+        console.log("user connected by socket client");
+        // console.log("hand->",socket.handshake);
         console.log("soc->", socket);
-        const user_id = socket.handshake.query("user_id");
+        const user_id = socket.handshake.query["user_id"];
 
         const socket_id = socket.id;
 
-
-        console.log(`User connected on ${socket_id}`)
+        console.log(`User connected on socket_id ${socket_id}`)
 
         if (Boolean(user_id)) {
             await User.findByIdAndUpdate(user_id, { socket_id, status: "Online" });
@@ -95,7 +107,7 @@ function startServer() {
         //user A send an  request to any user
         // to->id of  whom reuest sending
         // from -> sender id
-        socket.on("friend__request", async (data) => {
+        socket.on("friend_request", async (data) => {
 
             console.log(data.to); //{to : id (1234)}
 

@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from '../../utils/axiosMethod';
-import { ShowAlertSnackbar } from "./SidebarSlice";
+import { DecideConversation, ShowAlertSnackbar } from "./SidebarSlice";
 
 const initialState = {
     isLoggedIn: false,
@@ -77,7 +77,9 @@ export function LoginUserFun(FormData) {
 
 export function SignOutUserfun() {
     return async (dispatch) => {
-
+        // remove room_id when signout
+        dispatch(DecideConversation({ room_id: null }));
+        
         window.localStorage.removeItem("user_id");
         dispatch(SignOut())
         dispatch(ShowAlertSnackbar("SingOut Successfully", "success"));

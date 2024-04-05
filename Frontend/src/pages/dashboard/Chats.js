@@ -7,7 +7,7 @@ import { SimpleBarStyle } from '../../components/Scrollbar';
 import { ChatList } from '../../../src/data/index';
 import Search_Component from '../../Search/Search_Component';
 import ChatBox from '../../Chat/ChatBox';
-import FriendsDailogBox from '../../Sections/User_Collections/FriendsDailogBox';
+import UsersDailogBox from '../../Sections/User_Collections/UsersDailogBox';
 const Chats = () => {
 
     const theme = useTheme();
@@ -114,7 +114,7 @@ const Chats = () => {
                 </Stack>
             </Box >
             {
-                openDialoge && <FriendsDailogBox open={openDialoge} handleClose={handleCloseDialoge} />
+                openDialoge && <UsersDailogBox open={openDialoge} handleClose={handleCloseDialoge} />
             }
         </>
 

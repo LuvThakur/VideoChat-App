@@ -16,7 +16,9 @@ const initialState = {
     },
     users: [],
     friends: [],
-    friendRequests: []
+    friendRequests: [],
+    chat_type: null,
+    room_id: null
 };
 
 const SidebarSlice = createSlice({
@@ -57,6 +59,11 @@ const SidebarSlice = createSlice({
 
         updateFriendRequests: (state, action) => {
             state.friendRequests = action.payload.friendRequests;
+        },
+
+        selectConversation: (state, action) => {
+            state.chat_type = "individual";
+            state.room_id = action.payload.room_id;
         }
 
 
@@ -178,5 +185,12 @@ export function FetchFriendRequests() {
                 console.log("fr-req", error);
             }
         )
+    }
+}
+
+export function DecideConversation({ room_id }) {
+    return (dispatch, getState) => {
+
+        dispatch(SidebarSlice.actions.selectConversation({room_id}));
     }
 }

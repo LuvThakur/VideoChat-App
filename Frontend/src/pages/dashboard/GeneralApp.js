@@ -1,6 +1,6 @@
 import React from "react";
 import Chats from "./Chats";
-import { Stack, Box } from "@mui/material";
+import { Stack, Box, Typography } from "@mui/material";
 import Conversation from "../../components/Conversation";
 import Contact from "./Contact";
 import { useSelector } from "react-redux";
@@ -15,13 +15,27 @@ const GeneralApp = () => {
 
   const sidebar = useSelector(state => state.appe.sidebar);
 
+  const { chat_type, room_id } = useSelector(state => state.appe);
+
+
+  console.log("chat_ty", chat_type, room_id);
   return (
     <Stack direction={'row'} >
       <Chats />
 
       <Box sx={{ width: sidebar.isOpen ? 'calc(100vw - 750px)' : 'calc(100vw - 450px)', height: '100%' }}>
 
-        <Conversation />
+
+        {
+
+          chat_type === 'individual' && room_id !== null ? <Conversation /> :
+            <Stack>
+              <Typography>
+                Select Continue to chat
+              </Typography>
+            </Stack>
+
+        }
       </Box>
       {sidebar.isOpen && (() => {
         switch (sidebar.type) {
@@ -33,7 +47,7 @@ const GeneralApp = () => {
 
           case 'Starred':
             return <StarredMessage />
-            
+
           default:
             return null;
         }
