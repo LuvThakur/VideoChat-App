@@ -76,7 +76,8 @@ const userSchema = new Schema({
         type: Date
     },
     socket_id: {
-        type: String
+        type: String,
+        default:null
     },
     friends: [
         {

@@ -94,7 +94,11 @@ exports.login = async (req, res, next) => {
 
         const storedPassword = userDoc.password.trim(); // Trim stored password
 
+        console.log("inputpass", inputPassword);
+        console.log("stored", storedPassword);
+
         const isPasswordCorrect = await userDoc.correctPassword(inputPassword, storedPassword);
+        // const isPasswordCorrect = (inputPassword === storedPassword);
 
         console.log("isPasswordCorrect", isPasswordCorrect);
         if (!isPasswordCorrect) {
@@ -229,7 +233,9 @@ exports.verifiedOtp = async (req, res, next) => {
     const token = signToken(userInfo._id);
 
     res.json({
-        token: userInfo._id,
+        status: "success",
+        token: token,
+        user_id: userInfo._id,
         message: "OTP verified successfully"
     });
 };
@@ -368,34 +374,67 @@ exports.protect = async (req, res, next) => {
     try {
         let authToken;
 
+        console.log("protec-start")
+
+
         // Check for the presence of the token in headers or cookies
         const token = req.headers.authorization;
 
+        console.log("protec-token", token);
+
         if (token && token.startsWith('Bearer')) {
             authToken = token.split(" ")[1];
+
+            console.log("split-", authToken);
+
         } else if (req.cookies.jwt) {
             authToken = req.cookies.jwt;
+
+            console.log("cookies");
+
         } else {
-            return res.status(401).json({ status: "error", message: 'Unauthorized. Please provide a valid token.' });
+            console.log("beare-token-unautorize");
+
+            return res.status(401).json({ status: "error", message: 'Unauthorizedd. Please provide a valid token.' });
         }
 
         // Verify the token
+
         const verifyToken = promisify(jwt.verify);
+
+        console.log("verifyToken->", verifyToken);
+
         const decoded = await verifyToken(authToken, process.env.JWT_SECRET);
+
+
+        console.log("deco->", decoded);
 
         // Check if the user associated with the token exists
         const thisUser = await User.findById(decoded.userId);
+
+        console.log("tis->", thisUser);
+
         if (!thisUser) {
+
+            console.log("not-fou")
+
             return res.status(404).json({ status: "error", message: "User not found" });
         }
+        // this creates an error  todo task
+        // // Check if the user has changed their password after the token was issued
+        // if (thisUser.checkPasswordAfterIssue(decoded.iat)) {
+        //     console.log("re-login")
 
-        // Check if the user has changed their password after the token was issued
-        if (thisUser.checkPasswordAfterIssue(decoded.iat)) {
-            return res.status(400).json({ status: "error", message: "User recently changed password. Please re-login." });
-        }
+        //     return res.status(400).json({ status: "error", message: "User recently changed password. Please re-login." });
+        // }
 
         // Attach the decoded user data to the request object
+
+        console.log("protec-end")
         req.user = thisUser;
+
+        console.log("req->", req.user);
+
         next();
     } catch (error) {
         return res.status(401).json({ status: "error", message: 'Token is invalid or expired.' });

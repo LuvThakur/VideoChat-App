@@ -4,6 +4,7 @@ const app = require('./app');
 
 const mongoose = require('mongoose');
 const User = require('./Models/userModel');
+const one2oneMessage = require("./Models/OnetoOneModel");
 const FriendRequest = require('./Models/friendRequest');
 
 const path = require('path');
@@ -63,8 +64,6 @@ function startServer() {
     );
 
 
-
-
     // port 
     const port = process.env.PORT || 5000;
 
@@ -72,14 +71,13 @@ function startServer() {
         console.log(`Server Running at port ${port}`);
     })
 
+    // io.on("connection", async (socket) => {
 
+    //     const user_id = socket.handshake.query["user_id"];
 
-
-    // io.on('connection', (socket) => {
-    //     console.log('A user connected');
-    //     // Your socket.io event handlers go here
-    // });
-
+    //     console.log(`User connected with user_id: ${user_id}`);
+    //     console.log("socket connect");
+    // })
 
     // listen io server for real-time connection
     // When a client connects to the server, socket.io performs a handshake to establish the WebSocket connection.
@@ -88,9 +86,12 @@ function startServer() {
     io.on("connection", async (socket) => {
 
 
-        console.log("user connected by socket client");
         // console.log("hand->",socket.handshake);
-        console.log("soc->", socket);
+        // console.log("soc->", socket);
+
+
+        console.log("soc->", JSON.stringify(socket.handshake.query));
+
         const user_id = socket.handshake.query["user_id"];
 
         const socket_id = socket.id;
@@ -107,40 +108,53 @@ function startServer() {
         //user A send an  request to any user
         // to->id of  whom reuest sending
         // from -> sender id
-        socket.on("friend_request", async (data) => {
+        socket.on("friend_request", async (data, ack) => {
 
-            console.log(data.to); //{to : id (1234)}
+            try {
 
-            const to_User = await User.findById(data.to).select("socket_id");
-            const from_User = await User.findById(data.from).select("socket_id");
+                const to_User = await User.findById(data.to).select("socket_id");
+                const from_User = await User.findById(data.from).select("socket_id");
 
-            // create frind request
+                // create frind request
 
-            await FriendRequest.create({
-                sender: data.from,
-                recipient: data.to,
-            })
+                await FriendRequest.create({
+                    sender: data.from,
+                    recipient: data.to,
+                })
+
+                console.log("Received friend request:", data);
+
+                // Emit new_friend_request
+                io.to(to_User.socket_id).emit("new_friend_request", {
+                    message: "New friend request received!"
+                });
+
+                console.log("\nEmitted new_friend_request->", to_User.socket_id);
 
 
-            io.to(to_User.socket_id).emit("new_friend_request", {
-                // 
+                io.to(from_User.socket_id).emit("request_sent", {
+                    // 
 
-                message: "New frnd Request  Received"
-            });
+                    message: "New frnd Request  sent succes"
+                });
 
-            io.to(from_User.socket_id).emit("request_sent", {
-                // 
+                ack({ success: true });
 
-                message: "New frnd Request  sent succes"
-            });
-
+            } catch (error) {
+                console.error("Error handling friend_request:", error);
+                // Acknowledge with failure
+                ack({ success: false });
+            }
 
 
         });
 
-        socket.on("accept_request", async (data) => {
-            console.log(data);
 
+        // accept frnd request 
+
+        socket.on("accept_request", async (data) => {
+
+            console.log("accept->", data);
             const request_doc = await FriendRequest.findById(data.request_id);
             console.log(request_doc)
 
@@ -214,6 +228,21 @@ function startServer() {
 
 
 
+        // one2one direct conversation
+        /*
+                socket.on("get_direct_conversations", async ({ user_id }, callback) => {
+        
+                    const existing_conversation = await one2oneMessage.find({
+                        participants: { $all: [user_id] },
+                    }).populate("participants", "firstname lastname email _id status")
+        
+        
+                    console.log("exit_conversation", existing_conversation);
+        
+                    callback(existing_conversation);
+        
+                })
+        */
         // socket.on('disconnect', () => {
         //     console.log('user disconnected');
 

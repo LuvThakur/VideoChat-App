@@ -11,7 +11,12 @@ const UserComponent = ({ firstname, lastname, _id, online, img }) => {
     const theme = useTheme();
 
     const name = `${firstname} ${lastname}`;
+
+
     const user_id = window.localStorage.getItem("user_id");
+
+    console.log("u-id", user_id);
+
 
     return (
         <Box
@@ -20,13 +25,13 @@ const UserComponent = ({ firstname, lastname, _id, online, img }) => {
             sx={{
                 width: "100%",
                 borderRadius: 1,
-                backgroundColor: theme.pallete.backgroundColor.paper
+                backgroundColor: theme.palette.background.neutral
 
 
             }}
         >
 
-            <Stack direction={'row'} alignItems={'center'} spacing={2}>
+            <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} >
                 {
                     online ?
                         (
@@ -61,6 +66,8 @@ const UserComponent = ({ firstname, lastname, _id, online, img }) => {
                     <Button
 
                         onClick={() => {
+                            console.log("reqeust sent bef")
+
                             socket.emit("friend_request", { to: _id, from: user_id }, () => {
                                 alert("req sent");
                                 console.log("reqeust sent")
@@ -90,7 +97,7 @@ const UserFriendsComponent = ({ firstname, lastname, _id, online, img }) => {
             sx={{
                 width: "100%",
                 borderRadius: 1,
-                backgroundColor: theme.pallete.backgroundColor.paper
+                backgroundColor: theme.palette.background.neutral
 
 
             }}
@@ -151,7 +158,8 @@ const FriendRequestComponent = ({ firstname, lastname, _id, online, img, id }) =
             sx={{
                 width: "100%",
                 borderRadius: 1,
-                backgroundColor: theme.pallete.backgroundColor.paper
+                backgroundColor: theme.palette.background.neutral
+
 
 
             }}

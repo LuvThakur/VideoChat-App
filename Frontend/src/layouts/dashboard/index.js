@@ -16,6 +16,8 @@ const DashboardLayout = () => {
 
   const user_id = window.localStorage.getItem("user_id");
 
+  console.log("user->dash", user_id);
+
   useEffect(() => {
 
     if (isLoggedIn) {
@@ -38,17 +40,23 @@ const DashboardLayout = () => {
       }
 
 
+      console.log("this call friend_request");
+
       socket.on("new_friend_request", (data) => {
-        dispatch(ShowAlertSnackbar({ message: data.message, severity: "success" }));
-      })
+        console.log("this call new_friend_request");
+
+        dispatch(ShowAlertSnackbar(data.message, "success")); // Pass message and severity directly
+      });
 
       socket.on("request_accepted", (data) => {
-        dispatch(ShowAlertSnackbar({ message: data.message, severity: "success" }));
-      })
+        dispatch(ShowAlertSnackbar(data.message, "success")); // Pass message and severity directly
+      });
 
       socket.on("request_Sent", (data) => {
-        dispatch(ShowAlertSnackbar({ message: data.message, severity: "success" }));
-      })
+        console.log("this call request_Sent");
+        dispatch(ShowAlertSnackbar(data.message, "success")); // Pass message and severity directly
+      });
+
 
 
       return () => {

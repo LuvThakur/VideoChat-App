@@ -14,7 +14,9 @@ const UserLists = () => {
         dispatch(FetchUsers());
     }, []);
 
-    const { users } = useSelector((state) => state.app);
+    const { users } = useSelector((state) => state.appe);
+
+    console.log("users->", users);
 
     return (
         <>
@@ -39,8 +41,10 @@ const FriendsLists = () => {
         dispatch(FetchFriends());
     }, []);
 
-    const { friends } = useSelector((state) => state.app);
+    const { friends } = useSelector((state) => state.appe);
 
+
+    console.log("friends->", friends);
 
     return (
         <>
@@ -67,8 +71,9 @@ const FriendRequestsLists = () => {
         dispatch(FetchFriendRequests());
     }, []);
 
-    const { friendRequests } = useSelector((state) => state.app);
+    const { friendRequests } = useSelector((state) => state.appe);
 
+    console.log("friendRequests->", friendRequests);
 
     return (
         <>
@@ -106,8 +111,8 @@ const FriendsDailogBox = ({ open, handleClose }) => {
             <Stack direction={'row'} spacing={2} p={1} justifyContent={'center'}>
                 <Tabs value={value} onChange={handleChange} centered>
                     <Tab label="users" />
-                    <Tab label="Requests" />
                     <Tab label="Friends" />
+                    <Tab label="Requests" />
                 </Tabs>
             </Stack>
             <DialogContent>
@@ -121,11 +126,11 @@ const FriendsDailogBox = ({ open, handleClose }) => {
 
                                 switch (value) {
                                     case 0://all user
-                                        return UserLists;
+                                        return <UserLists />;
                                     case 1://all freinds
-                                        return FriendsLists;
+                                        return <FriendsLists />;
                                     case 2://all req
-                                        return FriendRequestsLists;
+                                        return <FriendRequestsLists />;
 
                                     default:
                                         break;

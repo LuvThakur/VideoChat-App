@@ -58,6 +58,7 @@ const SidebarSlice = createSlice({
         },
 
         updateFriendRequests: (state, action) => {
+            console.log("fRQ->", action.payload.friendRequests);
             state.friendRequests = action.payload.friendRequests;
         },
 
@@ -93,7 +94,6 @@ export function ShowAlertSnackbar(message, severity) {
 
     return async (dispatch, getState) => {
 
-        console.log("call show ans open ");
         console.log("cal-message:", message, typeof message);
         console.log("cail-severity:", severity, typeof severity);
 
@@ -133,7 +133,16 @@ export function FetchUsers() {
         ).catch(
 
             (error) => {
-                console.log("er", error);
+                console.error("Error fetching users:", error);
+
+                // Optionally dispatch an action to update state with error
+                dispatch(SidebarSlice.actions.updateUsers({ users: [] }));
+
+                // Also dispatch an action for alert or snackbar
+                dispatch(SidebarSlice.actions.openSnackbar({
+                    message: "Failed to fetch users. Please try again.",
+                    severity: "warning"
+                }))
             }
         )
 
@@ -169,6 +178,9 @@ export function FetchFriends() {
 export function FetchFriendRequests() {
 
     return async (dispatch, getState) => {
+
+        console.log("auhtToken->", getState().auth.token);
+
         await axios.get("/user/get-friend-requests", {
             headers: {
                 "Content-Type": "application/json",
@@ -182,7 +194,7 @@ export function FetchFriendRequests() {
             }
         ).catch(
             (error) => {
-                console.log("fr-req", error);
+                console.log("fr-err", error);
             }
         )
     }
@@ -191,6 +203,6 @@ export function FetchFriendRequests() {
 export function DecideConversation({ room_id }) {
     return (dispatch, getState) => {
 
-        dispatch(SidebarSlice.actions.selectConversation({room_id}));
+        dispatch(SidebarSlice.actions.selectConversation({ room_id }));
     }
 }

@@ -18,7 +18,6 @@ const GeneralApp = () => {
   const { chat_type, room_id } = useSelector(state => state.appe);
 
 
-  console.log("chat_ty", chat_type, room_id);
   return (
     <Stack direction={'row'} >
       <Chats />

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTheme } from '@emotion/react';
 import { Box, IconButton, Typography, Button, Divider } from '@mui/material';
 import { Stack } from '@mui/material';
@@ -8,8 +8,16 @@ import { ChatList } from '../../../src/data/index';
 import Search_Component from '../../Search/Search_Component';
 import ChatBox from '../../Chat/ChatBox';
 import UsersDailogBox from '../../Sections/User_Collections/UsersDailogBox';
+import { socket } from '../../Socket';
+import { useSelector } from 'react-redux';
+
+const user_id = window.localStorage.getItem("user_id");
+
+
 const Chats = () => {
 
+    const { conversationList } = useSelector((state) => state.conversation.direct_chat);
+    console.log("conv->", conversationList);
     const theme = useTheme();
 
     const [openDialoge, setDialoge] = useState(false);
@@ -24,6 +32,13 @@ const Chats = () => {
 
         setDialoge(false);
     }
+
+    useEffect(
+        () => {
+            socket.emit("get_direct_conversations", { user_id }, (data) => {
+                // data -> list of exist conversation
+            })
+        }, [])
 
 
     return (
@@ -89,13 +104,16 @@ const Chats = () => {
                     <Stack sx={{ flexGrow: 1, overflowY: 'scroll', height: '100%' }} >
                         <SimpleBarStyle timeout={500} clickOnTrack={false} >
                             <Stack direction={'column'} spacing={2.5}>
+{/*                               
                                 <Typography fontWeight={'700'} variant='subtitle2' color={'#676667'} >
                                     Pinned
                                 </Typography>
 
                                 {ChatList.filter((chat) => chat.pinned === true).map((chat) => {
                                     return <ChatBox key={chat.id}  {...chat} />
-                                })}
+                                })} */}
+
+                                
                             </Stack>
 
                             <Stack direction={'column'} spacing={2.5}>
@@ -104,7 +122,7 @@ const Chats = () => {
                                 </Typography>
 
 
-                                {ChatList.filter((chat) => chat.pinned === false).map((chat) => {
+                                {conversationList.filter((chat) => chat.pinned === false).map((chat) => {
                                     return <ChatBox key={chat.id} {...chat} />
                                 })}
                             </Stack>

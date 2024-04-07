@@ -46,65 +46,87 @@ exports.update = async (req, res, next) => {
 
 exports.getUsers = async (req, res, next) => {
 
-    const all_users = User.find({
-        verified: true,
+    try {
 
-    }).select("firstname lastname _id")
+        const all_users_query = User.find({
+            verified: true,
+            _id: { $ne: req.user._id } // Exclude the current user
+        }).select("firstname lastname _id");
 
+        // Execute the query and await the result
+        const all_users = await all_users_query.exec();
 
-    // get an protected request
-
-    const this_user = req.user;
-
-
-    // remaing users whose are not friend and exlude me
-
-    const remaining_users = (await all_users).filter(
-        (user) => !this_user.friends.include(user._id) && user._id.toString() !== this_user._id.toString()
-    );
+        console.log("all-users", all_users);
 
 
-    res.status(200).json({
 
-        status: "success",
-        data: remaining_users,
-        message: "Users found successfully"
-    })
+        res.status(200).json({
+
+            status: "success",
+            data: all_users,
+            message: "Users found successfully"
+        })
+    }
+    catch (error) {
+        console.error('Error fetching getUsers:', error);
+        res.status(500).json({
+            status: "error",
+            message: "Internal server error"
+        });
+    }
 
 }
 
 
 exports.getFriends = async (req, res, next) => {
 
+    try {
+        // get an protected request
 
-    // get an protected request
+        const this_user = req.user;
 
-    const this_user = req.user;
-
-    const friends = await User.findById(this_user._id).populate("friends", "firstname lastname _id");
+        const curr_user = await User.findById(this_user._id).populate("friends", "firstname lastname _id");
 
 
-    res.status(200).json({
-        status: "success",
-        data: friends,
-        message: "Friends found successfully!"
-    })
+        res.status(200).json({
+            status: "success",
+            data: curr_user.friends,
+            message: "Friends found successfully!"
+        })
+    }
+    catch (error) {
+
+        console.error('Error fetching friends:', error);
+        res.status(500).json({
+            status: "error",
+            message: "Internal server error"
+        });
+    }
 
 }
-
 
 exports.getRequests = async (req, res, next) => {
-    // get an protected request
+    try {
+        // Get protected request
+        const this_user = req.user;
+        console.log("reques-user",this_user);
 
-    const this_user = req.user;
-
-    const requests = await FriendRequest.find({ recipient: this_user._id }).populate("sender", "firstname lastname _id");
-
-
-    res.status(200).json({
-        status: "success",
-        data: requests,
-        message: "FriendsRequest found successfully!"
-    })
-
-}
+        // Find friend requests where this user is the recipient
+        const requests = await FriendRequest.find({ recipient: this_user._id }).populate("sender", "firstname lastname _id");
+        
+        
+        console.log("reques-accept",requests);
+        res.status(200).json({
+            status: "success",
+            data: requests,
+            message: "Friend requests found successfully!"
+        });
+    } catch (error) {
+        // If an error occurs, handle it
+        console.error('Error fetching friend requests:', error);
+        res.status(500).json({
+            status: "error",
+            message: "Internal server error"
+        });
+    }
+};

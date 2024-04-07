@@ -61,6 +61,8 @@ export function LoginUserFun(FormData) {
 
             dispatch(ShowAlertSnackbar(response.data.message, "success"));
 
+            console.log("user_id->login", response);
+            console.log("user_id->login", response.data.user_id);
             window.localStorage.setItem("user_id", response.data.user_id);
 
 
@@ -214,6 +216,8 @@ export function VerifyOtpfun(FormData) {
                 console.log("new-pass", response);
 
                 // Dispatch login action if needed
+                console.log("user_id->verfity0top", response);
+                console.log("user_id->verfity0top", response.data.user_id);
                 window.localStorage.setItem("user_id", response.data.user_id);
                 dispatch(Login({ isLoggedIn: true, token: response.data.token }));
                 dispatch(ShowAlertSnackbar(response.data.message, "success"));
