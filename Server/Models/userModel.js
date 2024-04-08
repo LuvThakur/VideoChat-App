@@ -77,7 +77,7 @@ const userSchema = new Schema({
     },
     socket_id: {
         type: String,
-        default:null
+        default: null
     },
     friends: [
         {
@@ -162,11 +162,13 @@ userSchema.pre("save", async function (next) {
     }
 });
 
+userSchema.methods.correctPassword = async function (inputPassword, storedPassword) {
 
-userSchema.methods.correctPassword = async function (storePassword, userPassword) {
+    console.log("inputpass-cor", inputPassword);
+    console.log("stored-cor", storedPassword);
 
-    return await bcrypt.compare(storePassword, userPassword);
-}
+    return await bcrypt.compare(inputPassword, storedPassword);
+};
 
 /*
 userSchema.methods.correctOtp = async function (enteredOtp, savedOtp) {
@@ -198,10 +200,10 @@ userSchema.methods.createPasswordResetToken = function () {
 }
 
 // ensure user log out or not able access when another user reset password recently
-userSchema.checkPasswordAfterissue = function (time) {
+// userSchema.checkPasswordAfterissue = function (time) {
 
-    return time < this.passwordChangesAt;
-}
+//     return time < this.passwordChangesAt;
+// }
 
 const User = mongoose.model('user', userSchema); // Model name 'user'
 

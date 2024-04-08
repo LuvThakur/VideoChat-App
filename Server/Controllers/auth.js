@@ -58,6 +58,10 @@ exports.register = async (req, res, next) => {
 
         const token = signToken(req.userId);
 
+        console.log("newuser->", User.firstname);
+        console.log("newuser-pass->", User.password);
+
+
         // Send OTP after registering user
         req.body.userId = req.userId; // Assuming you need this in sendOtp
         next(); // Call next here
@@ -92,13 +96,12 @@ exports.login = async (req, res, next) => {
             });
         }
 
-        const storedPassword = userDoc.password.trim(); // Trim stored password
+        const storedPassword = userDoc.password; // Trim stored password
 
         console.log("inputpass", inputPassword);
         console.log("stored", storedPassword);
 
-        const isPasswordCorrect = await userDoc.correctPassword(inputPassword, storedPassword);
-        // const isPasswordCorrect = (inputPassword === storedPassword);
+        const isPasswordCorrect = userDoc.correctPassword(inputPassword, storedPassword);
 
         console.log("isPasswordCorrect", isPasswordCorrect);
         if (!isPasswordCorrect) {
@@ -107,7 +110,6 @@ exports.login = async (req, res, next) => {
                 message: "Incorrect password"
             });
         }
-
         const token = signToken(userDoc._id);
 
         res.status(200).json({
@@ -124,6 +126,7 @@ exports.login = async (req, res, next) => {
         });
     }
 };
+
 
 
 exports.sendOtp = async (req, res, next) => {
