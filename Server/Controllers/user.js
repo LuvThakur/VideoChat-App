@@ -1,5 +1,6 @@
 const User = require("../Models/userModel");
 const filterObj = require("../Utils/FiltersObjFields");
+const FriendRequest = require("../Models/friendRequest");
 
 exports.update = async (req, res, next) => {
 
@@ -109,13 +110,15 @@ exports.getRequests = async (req, res, next) => {
     try {
         // Get protected request
         const this_user = req.user;
-        console.log("reques-user",this_user);
-
+        console.log("reques-user", this_user);
+        
+        console.log("reques-accept-log-11");
         // Find friend requests where this user is the recipient
         const requests = await FriendRequest.find({ recipient: this_user._id }).populate("sender", "firstname lastname _id");
+
         
-        
-        console.log("reques-accept",requests);
+        console.log("reques-accept-log-12");
+        console.log("reques-accept-log", requests);
         res.status(200).json({
             status: "success",
             data: requests,
