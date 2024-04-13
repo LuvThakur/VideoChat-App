@@ -168,11 +168,18 @@ function startServer() {
                 return;
             }
             // Check if sender and receiver exist
-            const sender = await User.findById(request_doc.sender);
-            const receiver = await User.findById(request_doc.receiver);
 
-            if (!sender || !receiver) {
-                console.log("Sender or receiver not found");
+            console.log("User_doc", request_doc);
+
+            const sender = await User.findById(request_doc.sender);
+            const receiver = await User.findById(request_doc.recipient);
+
+            if (!sender) {
+                console.log("Sender  not found");
+                return;
+            }
+            if (!receiver) {
+                console.log(" receiver not found");
                 return;
             }
 
