@@ -1,8 +1,12 @@
 import { Stack, Typography, stack } from '@mui/material'
 import React from 'react'
 import VerifyForm from '../../Sections/auth/VerifyForm'
+import { useSelector } from 'react-redux'
 
 export default function Verify() {
+
+    const { email } = useSelector((state) => state.auth);
+
     return (
         <>
             <Stack spacing={2} position={'relative'}>
@@ -11,8 +15,9 @@ export default function Verify() {
                     Please Verify OTP
                 </Typography>
 
+
                 <Stack>
-                    <Typography>     Sent to email (luvthakur262001@gmail.com)</Typography>
+                    <Typography>`    Verification email sent to ({email})`</Typography>
                 </Stack>
 
                 <VerifyForm />

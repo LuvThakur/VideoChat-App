@@ -49,22 +49,47 @@ exports.getUsers = async (req, res, next) => {
 
     try {
 
-        const all_users_query = User.find({
+        // const currentUser = req.user; // Assuming req.user contains the current user
+        // const friendsIds = currentUser.friends.map(friend => friend.toString()); // Map friends to string IDs
+
+
+        // const all_users_query = User.find({
+        //     verified: true,
+        //     _id: { $nin: [currentUser._id, ...friendsIds] } // Exclude the current user and their friends
+        // }).select("firstname lastname _id");
+
+         // Execute the query and await the result
+        // const all_users = await all_users_query.exec();
+
+
+
+        const all_users = User.find({
             verified: true,
-            _id: { $ne: req.user._id } // Exclude the current user
-        }).select("firstname lastname _id");
 
-        // Execute the query and await the result
-        const all_users = await all_users_query.exec();
+        }).select("firstname lastname _id")
 
-        console.log("all-users", all_users);
+
+        // get an protected request
+
+        const this_user = req.user;
+
+
+        // remaing users whose are not friend and exlude me
+
+        const remaining_users = (await all_users).filter(
+            (user) => !this_user.friends.map(friend => friend.toString()).includes(user._id.toString()) && user._id.toString() !== this_user._id.toString()
+        );
+
+       
+
+        console.log("all-users", remaining_users);
 
 
 
         res.status(200).json({
 
             status: "success",
-            data: all_users,
+            data: remaining_users,
             message: "Users found successfully"
         })
     }
@@ -88,6 +113,7 @@ exports.getFriends = async (req, res, next) => {
 
         const curr_user = await User.findById(this_user._id).populate("friends", "firstname lastname _id");
 
+        console.log("curr user", curr_user);
 
         res.status(200).json({
             status: "success",
@@ -111,13 +137,11 @@ exports.getRequests = async (req, res, next) => {
         // Get protected request
         const this_user = req.user;
         console.log("reques-user", this_user);
-        
-        console.log("reques-accept-log-11");
+
         // Find friend requests where this user is the recipient
         const requests = await FriendRequest.find({ recipient: this_user._id }).populate("sender", "firstname lastname _id");
 
-        
-        console.log("reques-accept-log-12");
+
         console.log("reques-accept-log", requests);
         res.status(200).json({
             status: "success",

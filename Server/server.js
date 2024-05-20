@@ -83,7 +83,7 @@ function startServer() {
         // console.log("soc->", socket);
 
 
-        console.log("soc->", JSON.stringify(socket.handshake.query));
+        // console.log("soc->", JSON.stringify(socket.handshake.query));
 
         let user_id = socket.handshake.query['user_id ']; // Note the extra space
 
@@ -96,62 +96,79 @@ function startServer() {
             // Handle this case accordingly
             return;
         }
+
+
         const socket_id = socket.id;
 
-        console.log(`User connected on socket_id ${socket_id}`)
+        // console.log(`User connected on socket_id ${socket_id}`)
 
-        console.log("boolean->", Boolean(user_id))
 
         if (Boolean(user_id)) {
             await User.findByIdAndUpdate(user_id, { socket_id: socket_id, status: "Online" });
         }
 
-        console.log("boolean->", Boolean(user_id))
 
         // event listners- >>
 
         //user A send an  request to any user
         // to->id of  whom reuest sending
         // from -> sender id
-        socket.on("friend_request", async (data, ack) => {
+        socket.on("friend_request", async (data) => {
 
             try {
 
                 const to_User = await User.findById(data.to).select("socket_id");
                 const from_User = await User.findById(data.from).select("socket_id");
 
-                // create frind request
+                // check user already friends or not
 
-                await FriendRequest.create({
-                    sender: data.from,
-                    recipient: data.to,
-                })
+                const alreadyFriends = await areFriends(data.from, data.to);
 
-                console.log("Received friend request:", data);
+                console.log("ale->1");
+                console.log("ale->", alreadyFriends);
 
-                // Emit new_friend_request
-                io.to(to_User.socket_id).emit("new_friend_request", {
-                    message: "New friend request received!"
-                });
+                if (alreadyFriends) {
+                    console.log("alresy")
+                    io.to(from_User.socket_id).emit("request_sent_error", {
 
-                console.log("\nEmitted  to_User.socket_i->", to_User.socket_id);
-                console.log("\nEmitted  from_User.socket_i->", from_User.socket_id);
+                        message: "Error: You are already friends with this user."
+
+                    });
+
+                }
+
+                else {
+                    // If they are not already friends, create a new friend request
+
+                    await FriendRequest.create({
+                        sender: data.from,
+                        recipient: data.to,
+                    })
+
+                    console.log("Received friend request:", data);
 
 
-                io.to(from_User.socket_id).emit("request_sent", {
+                    console.log("\nEmitted  to_User.socket_i->", to_User.socket_id);
+                    console.log("\nEmitted  from_User.socket_i->", from_User.socket_id);
 
 
-                    message: "New frnd Request  sent succes"
-                });
 
-                ack({ success: true });
+                    // Emit new_friend_request
+                    io.to(to_User.socket_id).emit("new_friend_request", {
+                        message: "New friend request received!"
+                    });
 
-            } catch (error) {
-                console.error("Error handling friend_request:", error);
-                // Acknowledge with failure
-                ack({ success: false });
+
+                    io.to(from_User.socket_id).emit("request_sent", {
+                        message: "New friend request sent successfully!"
+                    });
+                }
+
             }
 
+            catch (error) {
+                console.error("Error handling friend_request:", error);
+            }
 
         });
 
@@ -159,6 +176,7 @@ function startServer() {
         // accept frnd request 
 
         socket.on("accept_request", async (data) => {
+
 
             console.log("accept->", data);
             const request_doc = await FriendRequest.findById(data.request_id);
@@ -169,37 +187,60 @@ function startServer() {
             }
             // Check if sender and receiver exist
 
-            console.log("User_doc", request_doc);
-
-            const sender = await User.findById(request_doc.sender);
-            const receiver = await User.findById(request_doc.recipient);
-
-            if (!sender) {
-                console.log("Sender  not found");
-                return;
-            }
-            if (!receiver) {
-                console.log(" receiver not found");
-                return;
-            }
-
-            // Add to friends list
-            sender.friends.push(request_doc.recipient);
-            receiver.friends.push(request_doc.sender);
-
+            console.log("User_doc Receiver", request_doc);
             try {
+
+                const sender = await User.findById(request_doc.sender);
+                const receiver = await User.findById(request_doc.recipient);
+
+                if (!sender) {
+                    console.log("Sender  not found");
+                    return;
+                }
+                if (!receiver) {
+                    console.log(" receiver not found");
+                    return;
+                }
+
+                console.log("send->", sender);
+                console.log("rece->", receiver);
+
+
+
+                const AnalreadyFriends = await areFriends(sender._id, receiver._id);
+
+
+
+                if (AnalreadyFriends) {
+                    console.log("Already friends, canceling request");
+
+                    // Here you can emit an event to inform the client that the request cannot be accepted
+                    io.to(sender.socket_id).emit("request_accepted_error", {
+                        message: "Error: You are already friends with this user."
+                    });
+                    return;
+
+                }
+
+                // Add to friends list
+                sender.friends.push(request_doc.recipient);
+                receiver.friends.push(request_doc.sender);
+
+
+
+                await sender.save({ new: true, validateModifiedOnly: true });
                 await receiver.save({ new: true, validateModifiedOnly: true });
 
                 await FriendRequest.findByIdAndDelete(data.request_id);
 
                 console.log("Friendship established!");
 
-                io.to(sender.socket_id).emit("request accept", {
-                    message: "Frnd Req accept"
+                io.to(sender.socket_id).emit("request_accepted", {
+                    message: `Frnd Req accept by ${receiver.firstname}`
                 });
 
-                io.to(receiver.socket_id).emit("request accept", {
-                    message: "Frnd Req accept"
+                io.to(receiver.socket_id).emit("request_accepted", {
+                    message: `Now You and ${sender.firstname} became friends`
                 });
 
             } catch (error) {
@@ -207,25 +248,125 @@ function startServer() {
                 // Handle the error, maybe send a response to the client
             }
 
-
-
         });
+
+
+        // Function to check if two users are already friends
+        async function areFriends(senderId, recipientId) {
+
+            try {
+
+                console.log("senderId", senderId, "reci[pient", recipientId);
+
+
+                const existingFriendship = await FriendRequest.findOne({
+
+                    $or: [
+                        {
+                            user1: senderId, user2: recipientId
+                        },
+                        {
+                            user1: recipientId, user2: senderId
+                        }
+                    ]
+
+                })
+
+                console.log("exist friend", existingFriendship);
+
+                return !!existingFriendship;
+            }
+            catch (error) {
+                console.error("Error checking friendship:", error);
+
+                return null;
+
+            }
+
+        }
+
+
+
+        // handle event  for getmessage
+
+        socket.on("get_message", async (data, callback) => {
+
+            const { messages } = await one2oneMessage.findById(data.conversation_id).select("messages");
+
+            console.log("get_msg_Event", messages);
+
+            callback(messages);
+        })
 
 
         // handle link/text msg
 
-        socket.on("text_message", (data) => {
-            console.log("received msg", data)
+        socket.on("text_message", async (data) => {
 
 
-            // data :{to , from , text}
-            // create new conversat , add new msg, 
-            // save to db
-            // emit incomi msg - to user
-            // emit outgo msg from user
+            try {
+                console.log("received msg", data)
+
+                // data :{to , from , text , conversation_id , type}
+
+
+
+                const { to, from, message, conversation_id, type } = data;
+
+                const to_User = await User.findById(to);
+                const from_User = await User.findById(from);
+
+
+                // create new conversat , add new msg, 
+
+                const new_message = {
+                    _id: new mongoose.Types.ObjectId(),
+                    to,
+                    from,
+                    type,
+                    text: message,
+                    created_at: Date.now(),
+                }
+
+
+                const chat = await one2oneMessage.findById(conversation_id);
+
+                chat.messages.push(new_message);
+
+                // save to db
+
+                await chat.save({});
+
+
+
+                if (!to_User || !from_User) {
+                    console.error("One of the users is not found.");
+                    // Handle this case appropriately, perhaps by sending an error response.
+                    return;
+                }
+
+
+                // emit incomi msg - to user
+
+                io.to(to_User.socket_id).emit("new_message", {
+
+                    conversation_id,
+                    message: new_message
+                })
+
+
+                // emit outgo msg from user
+
+                io.to(from_User.socket_id).emit("new_message", {
+                    conversation_id,
+                    message: new_message
+                })
+            }
+            catch (error) {
+                console.error("Error handling text_message event:", error);
+            }
+
         });
-
-
 
         socket.on("file_message", (data) => {
 
@@ -253,27 +394,80 @@ function startServer() {
         });
 
 
-
         // one2one direct conversation
-        /*
-                socket.on("get_direct_conversations", async ({ user_id }, callback) => {
-        
-                    const existing_conversation = await one2oneMessage.find({
-                        participants: { $all: [user_id] },
-                    }).populate("participants", "firstname lastname email _id status")
-        
-        
-                    console.log("exit_conversation", existing_conversation);
-        
-                    callback(existing_conversation);
-        
-                })
-        
-                // socket.on('disconnect', () => {
-                //     console.log('user disconnected');
-        
-                // });
-        */
+
+        socket.on("get_direct_conversations", async ({ user_id }, callback) => {
+
+            const existing_conversation = await one2oneMessage.find({
+                participants: { $all: [user_id] },
+            }).populate("participants", "firstname lastname email _id status")
+
+
+            console.log("exit_conversation", existing_conversation);
+
+            callback(existing_conversation);
+
+        })
+
+
+
+
+        //  start_conversation
+
+        socket.on("start_conversation", async (data) => {
+
+            const { to, from } = data;
+
+            // check there is  any conversation exist or not b/w 2 users
+
+
+            const existing_conversation = await one2oneMessage.find({
+                participants: { $size: 2, $all: [to, from] },
+
+            }).populate("participants", "firstname lastname email _id status");
+
+
+            console.log("existing conversations", existing_conversation[0]);
+
+
+            // if no conversation exist 
+
+            if (existing_conversation.length === 0) {
+                let new_chat = await one2oneMessage.create({
+                    participants: [to, from],
+                });
+
+                new_chat = await one2oneMessage.findById(new_chat._id).populate("participants", "firstname lastname email _id status");
+
+
+                console.log("new_chat", new_chat);
+
+                socket.emit("start_chat", new_chat);
+            }
+
+            // there is conversation exist
+            else {
+
+                socket.emit("start_chat", existing_conversation[0]);
+            }
+
+        })
+
+
+
+
+
+
+
+
+
+
+
+        // socket.on('disconnect', () => {
+        //     console.log('user disconnected');
+
+        // });
+
 
         socket.on('end', async (data) => {
             console.log('user disconnected');
@@ -287,10 +481,12 @@ function startServer() {
             // todo for  brodacast connection
             socket.disconnect(0);
         });
+
+
+
+
+
     });
-
-
-
 
 
     // handle Rejection error

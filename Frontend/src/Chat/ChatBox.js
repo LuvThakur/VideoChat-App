@@ -3,15 +3,37 @@ import { Stack, Box, Badge, Avatar, Typography } from '@mui/material';
 import { faker } from '@faker-js/faker';
 import { useTheme } from '@emotion/react'
 import StyledBadge from '../components/StyleBadge';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { DecideConversation } from '../Redux/Slice/SidebarSlice';
 
 const ChatBox = ({ id, img, name, msg, time, unread, online }) => {
 
+
+
+
+    console.log("msg->", msg);
     const theme = useTheme();
+
+    // const {current_message}
+
+    const { room_id } = useSelector((state) => state.appe);
+
+
+    // const selectedChatId = room_id?.toString();
+
+    // let isSelected = +selectedChatId === id;
+
+
+
+    // if (!selectedChatId) {
+    //     isSelected = false;
+    // }
+
+
 
     const dispatch = useDispatch();
 
+    // const {current_message}
     const handleClick = () => {
         dispatch(DecideConversation({ room_id: id }));
     }

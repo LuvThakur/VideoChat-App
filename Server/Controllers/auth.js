@@ -377,7 +377,6 @@ exports.protect = async (req, res, next) => {
     try {
         let authToken;
 
-        console.log("protec-start")
 
 
         // Check for the presence of the token in headers or cookies
@@ -388,7 +387,6 @@ exports.protect = async (req, res, next) => {
         if (token && token.startsWith('Bearer')) {
             authToken = token.split(" ")[1];
 
-            console.log("split-", authToken);
 
         } else if (req.cookies.jwt) {
             authToken = req.cookies.jwt;
@@ -396,7 +394,6 @@ exports.protect = async (req, res, next) => {
             console.log("cookies");
 
         } else {
-            console.log("beare-token-unautorize");
 
             return res.status(401).json({ status: "error", message: 'Unauthorizedd. Please provide a valid token.' });
         }
@@ -405,21 +402,17 @@ exports.protect = async (req, res, next) => {
 
         const verifyToken = promisify(jwt.verify);
 
-        console.log("verifyToken->", verifyToken);
 
         const decoded = await verifyToken(authToken, process.env.JWT_SECRET);
 
 
-        console.log("deco->", decoded);
 
         // Check if the user associated with the token exists
         const thisUser = await User.findById(decoded.userId);
 
-        console.log("tis->", thisUser);
 
         if (!thisUser) {
 
-            console.log("not-fou")
 
             return res.status(404).json({ status: "error", message: "User not found" });
         }
@@ -433,10 +426,9 @@ exports.protect = async (req, res, next) => {
 
         // Attach the decoded user data to the request object
 
-        console.log("protec-end")
         req.user = thisUser;
 
-        console.log("req->", req.user);
+        // console.log("req->", req.user);
 
         next();
     } catch (error) {

@@ -3,16 +3,19 @@ import { Stack, Box, styled, Badge, Avatar, Typography, IconButton, Divider } fr
 import { useTheme } from '@emotion/react';
 import { CaretDown, MagnifyingGlass, Phone, VideoCamera } from 'phosphor-react';
 import { faker } from '@faker-js/faker';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { ToggleSidebarfun } from '../../Redux/Slice/SidebarSlice'; // Correct import
 
 
 
-export default function DasHeader() {
+export default function DasHeader({ id, img, name, msg, time, unread, online }) {
 
     const theme = useTheme();
     const dispatch = useDispatch();
+
+
+    const { current_conversation } = useSelector((state) => state.conversation.direct_chat);
 
 
     const StyledBadge = styled(Badge)(({ theme }) => ({
@@ -46,10 +49,10 @@ export default function DasHeader() {
 
                         <Stack direction="column" spacing={0.1}>
                             <Typography variant="subtitle2" fontWeight="800">
-                                {'Animal Kingdom'}
+                                {current_conversation?.name}
                             </Typography>
                             <Typography variant="caption">
-                                {'msg'}
+                                {current_conversation?.time}
                             </Typography>
                         </Stack>
                     </Stack>

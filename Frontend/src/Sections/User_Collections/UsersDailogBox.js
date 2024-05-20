@@ -49,7 +49,7 @@ const FriendsLists = () => {
     return (
         <>
             {
-                friends.map((el, idx) => {
+                friends.map((el) => {
                     // frind compent
                     return <UserFriendsComponent key={el._id} {...el} />
                 })

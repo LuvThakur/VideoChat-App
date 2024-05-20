@@ -6,7 +6,9 @@ import {
   Stack,
   TextField,
   Tooltip,
-} from "@mui/material";
+}
+ from "@mui/material";
+
 import {
   Camera,
   File,
@@ -16,7 +18,12 @@ import {
   Smiley,
   Sticker,
   User,
-} from "phosphor-react";
+}
+   from "phosphor-react";
+
+
+
+
 import { useTheme, styled } from "@mui/material/styles";
 import React from "react";
 import { useSearchParams } from "react-router-dom";
@@ -140,6 +147,7 @@ const Footer = () => {
 
   const [openPicker, setOpenPicker] = React.useState(false);
   return (
+    
     <Box
       sx={{
         position: "relative",
@@ -157,6 +165,7 @@ const Footer = () => {
           boxShadow: "0px 0px 2px rgba(0, 0, 0, 0.25)",
         }}
       >
+
         <Stack direction="row" alignItems={"center"} spacing={isMobile ? 1 : 3}>
           <Stack sx={{ width: "100%" }}>
             <Box
@@ -177,10 +186,27 @@ const Footer = () => {
                 data={data}
                 onEmojiSelect={console.log}
               />
+
+
+              
             </Box>
+
+
+
+
             {/* Chat Input */}
             <ChatInput openPicker={openPicker} setOpenPicker={setOpenPicker} />
+
+
+
+
+
+
           </Stack>
+
+
+
+
           <Box
             sx={{
               height: 48,
@@ -199,7 +225,13 @@ const Footer = () => {
               </IconButton>
             </Stack>
           </Box>
+
+
+
         </Stack>
+
+
+
       </Box>
     </Box>
   );

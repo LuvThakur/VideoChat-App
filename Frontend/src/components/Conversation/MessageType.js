@@ -122,7 +122,7 @@ const TextMsg = ({ el, menu }) => {
 
 
 
-const ImgMessage = ({ el }) => {
+const MediaMsg = ({ el, menu }) => {
     const theme = useTheme();
 
     return (
@@ -137,12 +137,12 @@ const ImgMessage = ({ el }) => {
                     </Typography>
                 </Stack>
             </Box >
-            <MenuOptions />
+            {menu && <MenuOptions />}
         </Stack >
     )
 }
 
-const ReplyMsg = ({ el }) => {
+const ReplyMsg = ({ el, menu }) => {
     const theme = useTheme();
 
     return (
@@ -162,7 +162,7 @@ const ReplyMsg = ({ el }) => {
                     </Typography>
                 </Stack >
             </Box >
-            <MenuOptions />
+            {menu && <MenuOptions />}
         </Stack >
 
 
@@ -236,4 +236,4 @@ const LinkMsg = ({ el, menu }) => {
 
 
 
-export { TimeSeparation, TextMsg, ImgMessage, ReplyMsg, LinkMsg, DocMsg }
+export { TimeSeparation, TextMsg, MediaMsg, ReplyMsg, LinkMsg, DocMsg }
