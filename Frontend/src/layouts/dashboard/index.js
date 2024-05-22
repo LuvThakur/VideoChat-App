@@ -74,12 +74,12 @@ const DashboardLayout = () => {
 
 
 
-      socket.on("start_chat", (data) => {
+      socket.on("start_chat", (data) => { 
         console.log("Received conversation data:", data);
         console.log("Current conversation list:", conversationList);
 
         // Check if the received conversation already exists in the conversation list
-        const existingConversation = conversationList.find((el) => el.id === data._id);
+        const existingConversation = conversationList.find((el) => el?.id === data._id);
 
         if (existingConversation) {
           console.log("Existing conversation found:", data);

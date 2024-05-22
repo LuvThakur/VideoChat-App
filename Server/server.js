@@ -289,7 +289,7 @@ function startServer() {
 
         // handle event  for getmessage
 
-        socket.on("get_message", async (data, callback) => {
+        socket.on("get_messages", async (data, callback) => {
 
             const { messages } = await one2oneMessage.findById(data.conversation_id).select("messages");
 

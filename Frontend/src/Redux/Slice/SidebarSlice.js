@@ -63,6 +63,8 @@ const SidebarSlice = createSlice({
         },
 
         selectConversation: (state, action) => {
+
+            console.log("chat_type",action.payload);
             state.chat_type = "individual";
             state.room_id = action.payload.room_id;
         }
@@ -201,7 +203,9 @@ export function FetchFriendRequests() {
 }
 
 export function DecideConversation({ room_id }) {
-    return (dispatch, getState) => {
+
+    console.log("update-roo_id", room_id);
+    return async (dispatch, getState) => {
 
         dispatch(SidebarSlice.actions.selectConversation({ room_id }));
     }

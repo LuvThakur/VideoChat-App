@@ -41,16 +41,12 @@ const Chats = () => {
         setDialoge(false);
     }
 
-    useEffect(
-        () => {
-            socket.emit("get_direct_conversations", { user_id }, (data) => {
-                // data -> list of exist conversation
-
-                console.log("list of convers=>",data);
-                dispatch(fetchDirectone2oneConversation({ conversationList: data }));
-
-            })
-        }, [])
+    useEffect(() => {
+        socket.emit("get_direct_conversations", { user_id }, (data) => {
+            console.log("list of convers=>", data);
+            dispatch(fetchDirectone2oneConversation({ conversationList: data }));
+        });
+    }, []);
 
 
     return (
@@ -134,7 +130,7 @@ const Chats = () => {
                                 </Typography>
 
 
-                                {conversationList.filter((chat) => chat.pinned === true).map((chat) => {
+                                {conversationList.filter((chat) => chat.pinned !== true).map((chat) => {
                                     return <ChatBox key={chat.id} {...chat} />
                                 })}
                             </Stack>

@@ -67,6 +67,7 @@ export default function DasFooter() {
         setMessage((prevMessage) => prevMessage + emoji.native);
     };
 
+    //  used to find URLs in a text string and convert them into clickable links 
     function linkify(text) {
         const urlRegex = /(https?:\/\/[^\s]+)/g;
         return text.replace(

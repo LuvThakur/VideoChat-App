@@ -42,14 +42,15 @@ const Slice = createSlice({
 
                 return {
                     id: el._id, // objectID of Conversation,
-                    user_id: this_user?._id,
+                    user_id: this_user ? this_user._id : null,
                     img: faker.image.avatar(),
-                    name: `${this_user.firstname} ${this_user.lastname}`,
+                    name: this_user ? `${this_user.firstname} ${this_user.lastname}` : '',
                     msg: lastMessage ? lastMessage.text : " ",
                     time: "9:36",
                     unread: 0,
-                    pinned: true,
-                    online: this_user.status === "true" ? "true" : "false",
+                    pinned: false,
+                    online: this_user ? this_user.status === "Online" : false,
+                    about: this_user ? this_user.about : '',
                 }
 
             })
@@ -60,23 +61,34 @@ const Slice = createSlice({
         ,
 
         addDirectConversation: (state, action) => {
+
+            // Extract the Conversation List:
             const this_conversation = action.payload.conversationList;
 
-            console.log("this-cov->", action.payload.conversationList);
+            console.log("this-conversation-add->", action.payload.conversationList);
 
+            // Identify the Other User in the Conversation:
             const this_user = this_conversation.participants.find(
                 (el) => el._id.toString() !== user_id
             );
+
+            // Filter Out Any Existing Conversation with the Same ID:
+            state.direct_chat.conversationList = state.direct_chat.conversationList.filter(
+                (el) => el?.id !== this_conversation._id
+            );
+
+            console.log("this_conversation._id._id=>", this_conversation._id._id);
+
             state.direct_chat.conversationList.push({
-                id: this_conversation._id,
-                user_id: this_user._id,
+                id: this_conversation._id._id,
+                user_id: this_user?._id,
                 img: faker.image.avatar(),
                 name: `${this_user.firstname} ${this_user.lastname}`,
-                msg: faker.music.songName(),
+                msg: this_conversation.messages?.length > 0 ? this_conversation.messages.slice(-1)[0].text : "No messages yet",
                 time: "9:36",
                 unread: 0,
                 pinned: true,
-                online: this_user.status === "Online",
+                online: this_user?.status === "Online",
             });
         }
 
@@ -107,7 +119,7 @@ const Slice = createSlice({
                         user_id: this_user._id,
                         img: faker.image.avatar(),
                         name: `${this_user.firstname} ${this_user.lastname}`,
-                        msg: faker.music.songName(),
+                        msg: this_user_conversation.messages.slice(-1)[0]?.text || "No messages yet",
                         time: "9:36",
                         unread: 0,
                         pinned: true,

@@ -1,42 +1,45 @@
 import React from 'react'
-import { Stack, Box, Badge, Avatar, Typography } from '@mui/material';
+import { Stack, Box, Badge, Avatar, Typography, alpha } from '@mui/material';
 import { faker } from '@faker-js/faker';
 import { useTheme } from '@emotion/react'
 import StyledBadge from '../components/StyleBadge';
 import { useDispatch, useSelector } from 'react-redux';
 import { DecideConversation } from '../Redux/Slice/SidebarSlice';
+import { fetchDirectone2oneConversation } from '../Redux/Slice/Conversation';
 
 const ChatBox = ({ id, img, name, msg, time, unread, online }) => {
 
 
 
 
-    console.log("msg->", msg);
+    console.log("msg-id>", msg, id);
     const theme = useTheme();
 
-    // const {current_message}
+    const dispatch = useDispatch();
 
     const { room_id } = useSelector((state) => state.appe);
 
 
-    // const selectedChatId = room_id?.toString();
-
-    // let isSelected = +selectedChatId === id;
+    const selectedChatId = room_id?.toString();
 
 
 
-    // if (!selectedChatId) {
-    //     isSelected = false;
-    // }
+    const isSelected = room_id === id;
 
 
+    if (!selectedChatId) {
+        isSelected = false;
+    }
 
-    const dispatch = useDispatch();
 
     // const {current_message}
     const handleClick = () => {
-        dispatch(DecideConversation({ room_id: id }));
+        dispatch(DecideConversation({ room_id: id })); // Set selected user's room ID
+        // dispatch(fetchDirectone2oneConversation({ conversationList: [{ id }] })); // Fetch conversation details of selected user
     }
+
+
+
     return (
         <Box
 
@@ -46,8 +49,13 @@ const ChatBox = ({ id, img, name, msg, time, unread, online }) => {
             sx={{
 
                 width: '100%',
-                background: theme.palette.mode === 'light' ? '#EAF2FE' : theme.palette.background.default,
-                borderRadius: '8px',
+                background: isSelected
+                    ? theme.palette.mode === 'light'
+                        ? '#BDE1FF' // Change background color when selected
+                        : theme.palette.primary.main
+                    : theme.palette.mode === 'light'
+                        ? '#EAF2FE'
+                        : theme.palette.background.default, borderRadius: '8px',
             }}>
             <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} >
                 <Stack direction={'row'} spacing={2}>
