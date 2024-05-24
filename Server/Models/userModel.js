@@ -9,6 +9,7 @@ const { Schema } = mongoose;
 
 
 const userSchema = new Schema({
+
     firstname: {
         type: String,
         required: [true, "First Name is required"]
@@ -18,9 +19,11 @@ const userSchema = new Schema({
         type: String,
         required: [true, "Last Name is required"]
     },
+
     avatar: {
         type: String
     },
+
     email: {
         type: String,
         required: [true, "Email is required"],
@@ -42,9 +45,11 @@ const userSchema = new Schema({
     password: {
         type: String
     },
+
     confirmPassword: {
         type: String
     },
+    
     passwordChangesAt: {
         type: Date
     },
@@ -64,6 +69,7 @@ const userSchema = new Schema({
     updatedAt: {
         type: Date
     },
+
     verified: {
         type: Boolean,
         default: false
@@ -72,19 +78,23 @@ const userSchema = new Schema({
     otp: {
         type: String
     },
+
     otpExpiry: {
         type: Date
     },
+
     socket_id: {
         type: String,
         default: null
     },
+
     friends: [
         {
             type: mongoose.Schema.ObjectId,
             ref: 'User'
         }
     ],
+
     status: {
         type: String,
         enum: ["Online", "Offline"]
@@ -164,8 +174,8 @@ userSchema.pre("save", async function (next) {
 
 userSchema.methods.correctPassword = async function (inputPassword, storedPassword) {
 
-    console.log("inputpass-cor", inputPassword);
-    console.log("stored-cor", storedPassword);
+    // console.log("inputpass-cor", inputPassword);
+    // console.log("stored-cor", storedPassword);
 
     return await bcrypt.compare(inputPassword, storedPassword);
 };

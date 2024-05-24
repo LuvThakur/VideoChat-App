@@ -5,19 +5,29 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Alert, Stack, Button, Box } from '@mui/material';
 
+import { UpdateUserProfile } from '../../Redux/Slice/SidebarSlice';
+import { useDispatch } from 'react-redux';
+
 const LoginSchema = Yup.object().shape({
-    name: Yup.string().required("Name is required").min(3, "Minimum 3 characters required"),
+    firstname: Yup.string().required("Name is required").min(3, "Minimum 3 characters required"),
+    lastname: Yup.string().required("Name is required").min(3, "Minimum 3 characters required"),
     about: Yup.string().required("About is required").max(20, "You have exceeded the limit of 20 words"),
     avatarUrl: Yup.string().required("Avatar is required"),
 });
 
 const defaultValues = {
-    name: "",
+    firstname: "",
+    lastname: "",
     about: "",
     avatarUrl: "",
 };
-
+//firstname  lastname about
 const Profile_Form = () => {
+
+
+    const dispatch = useDispatch();
+
+
     const [avatar, setAvatar] = useState(null); // State to hold uploaded avatar
 
     const methods = useForm({
@@ -39,6 +49,10 @@ const Profile_Form = () => {
         try {
             // Handle form submission with avatar
             console.log("Form data with avatar:", { ...data, avatar: avatar });
+
+            dispatch(UpdateUserProfile({ firstname:data?.firstname , lastname:data?.lastname , about:data?.about ,avatar:"fake/url"}))
+
+
         } catch (error) {
             console.error("Error submitting form:", error);
             reset();
@@ -79,7 +93,8 @@ const Profile_Form = () => {
                         <input type="file" accept="image/*" onChange={(e) => handleDrop(e.target.files)} style={{ color: 'red', width: 'auto' }} />
                     </Stack>
 
-                    <ReactformText name={"name"} label="Name" />
+                    <ReactformText name={"firstname"} label="firstname" />
+                    <ReactformText name={"lastname"} label="lastname" />
                     <ReactformText multiline name={"about"} label="About" rows={4} />
 
 

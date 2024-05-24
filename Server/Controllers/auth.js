@@ -380,9 +380,10 @@ exports.protect = async (req, res, next) => {
 
 
         // Check for the presence of the token in headers or cookies
-        const token = req.headers.authorization;
+        const token = req.headers.authorization || req.body.authorization;
 
-        console.log("protec-token", token);
+        // console.log("req-header", req.body, "\n");
+        console.log("protec-token", token, "\n");
 
         if (token && token.startsWith('Bearer')) {
             authToken = token.split(" ")[1];

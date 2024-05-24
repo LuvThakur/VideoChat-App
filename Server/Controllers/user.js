@@ -2,10 +2,27 @@ const User = require("../Models/userModel");
 const filterObj = require("../Utils/FiltersObjFields");
 const FriendRequest = require("../Models/friendRequest");
 
+const catchAsync = require("../Utils/catchAsync");
+
+
+
+//catchAsync Automatically catches any errors that occur within the async function and passes them to the next middleware.
+
+
+exports.getMe = catchAsync(async (req, res, next) => {
+
+    console.log("profile-fetch", req.user);
+    res.status(200).json({
+        status: "success",
+        data: req.user,
+    })
+});
+
+
 exports.update = async (req, res, next) => {
 
 
-    const { user } = req.body;
+    const userid = req.user._id;
 
     const filterbody = filterObj(req.body, "firstname ", "lastname", "about", "avatar");
 
@@ -16,7 +33,7 @@ exports.update = async (req, res, next) => {
             validateModifiedOnly: true
         }
 
-        const updatedUser = await User.findByIdAndUpdate(user._id, filterbody, options);
+        const updatedUser = await User.findByIdAndUpdate(userid, filterbody, options);
 
 
         if (!updatedUser) {
@@ -32,6 +49,9 @@ exports.update = async (req, res, next) => {
             user_data: updatedUser,
             message: "Successfully updated"
         });
+
+
+        console.log("profile-updated", updatedUser);
     }
     catch (error) {
         console.log(error)
@@ -58,7 +78,7 @@ exports.getUsers = async (req, res, next) => {
         //     _id: { $nin: [currentUser._id, ...friendsIds] } // Exclude the current user and their friends
         // }).select("firstname lastname _id");
 
-         // Execute the query and await the result
+        // Execute the query and await the result
         // const all_users = await all_users_query.exec();
 
 
@@ -80,7 +100,7 @@ exports.getUsers = async (req, res, next) => {
             (user) => !this_user.friends.map(friend => friend.toString()).includes(user._id.toString()) && user._id.toString() !== this_user._id.toString()
         );
 
-       
+
 
         console.log("all-users", remaining_users);
 
@@ -136,7 +156,7 @@ exports.getRequests = async (req, res, next) => {
     try {
         // Get protected request
         const this_user = req.user;
-        console.log("reques-user", this_user);
+        // console.log("reques-user", this_user);
 
         // Find friend requests where this user is the recipient
         const requests = await FriendRequest.find({ recipient: this_user._id }).populate("sender", "firstname lastname _id");

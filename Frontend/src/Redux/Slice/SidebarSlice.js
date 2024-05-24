@@ -3,10 +3,13 @@ import axios from '../../utils/axiosMethod';
 
 
 const initialState = {
+    user: {},
     sidebar: {
         isOpen: false,
         type: 'Contact' // type can be varied 
     },
+
+    IsLoggedin: true,
 
     AlertSnackbar: {
         open: false,
@@ -64,13 +67,19 @@ const SidebarSlice = createSlice({
 
         selectConversation: (state, action) => {
 
-            console.log("chat_type",action.payload);
+            console.log("chat_type", action.payload);
             state.chat_type = "individual";
             state.room_id = action.payload.room_id;
+        },
+
+        profileFetch: (state, action) => {
+
+            state.user = action.payload.user;
+        },
+
+        updateProfile: (state, action) => {
+            state.user = action.payload.user;
         }
-
-
-
 
     }
 });
@@ -119,7 +128,13 @@ export function CloseAlertSnackbar() {
 
 
 export function FetchUsers() {
+
+
+
     return async (dispatch, getState) => {
+
+        console.log("auhtToken-FetchUsers-->", getState().auth.token);
+
 
         await axios.get("/user/get-users", {
             headers: {
@@ -181,7 +196,7 @@ export function FetchFriendRequests() {
 
     return async (dispatch, getState) => {
 
-        console.log("auhtToken->", getState().auth.token);
+        console.log("auhtToken-FetchFriendRequests-->", getState().auth.token);
 
         await axios.get("/user/get-friend-requests", {
             headers: {
@@ -191,12 +206,12 @@ export function FetchFriendRequests() {
 
         }).then(
             (response) => {
-                console.log("fr-req", response);
+                console.log("fetch-frndreq", response);
                 dispatch(SidebarSlice.actions.updateFriendRequests({ friendRequests: response.data.data }))
             }
         ).catch(
             (error) => {
-                console.log("fr-err", error);
+                console.log("fetch-frndreq", error);
             }
         )
     }
@@ -209,4 +224,63 @@ export function DecideConversation({ room_id }) {
 
         dispatch(SidebarSlice.actions.selectConversation({ room_id }));
     }
+}
+
+
+
+export const FetchUserProfile = () => {
+
+    return async (dispatch, getState) => {
+
+        // console.log("auhtToken-profil->", getState().auth.token);
+
+
+        await axios.get("/user/get-profile", {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${getState().auth.token}`,
+            }
+        }).then(
+
+
+            (response) => {
+                console.log("Profile-fetch", response);
+                dispatch(SidebarSlice.actions.profileFetch({ user: response.data.data }));
+
+            }
+        ).catch(
+            (error) => console.log("fetch-profile", error)
+
+        )
+    }
+}
+
+
+export const UpdateUserProfile = (formData) => {
+
+    return async (dispatch, getState) => {
+
+
+        // console.log("updat-profil-FormData->", formData, "\n");
+        // console.log("auhtToken-updat-profil->", getState().auth.token);
+
+
+        await axios.patch("/user/update-profile", { ...formData }, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${getState().auth.token}`
+            }
+        }).then(
+            (response) => {
+                console.log("Profile-Update", response);
+                dispatch(SidebarSlice.actions.updateProfile({}));
+            }
+        ).catch(
+            (error) => console.log("update-prfile-err", error)
+
+        )
+
+    }
+
+
 }

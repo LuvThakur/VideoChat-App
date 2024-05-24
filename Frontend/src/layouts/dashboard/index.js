@@ -5,7 +5,7 @@ import { Stack } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
 import { connectSocket, socket } from '../../socket';
-import { DecideConversation, ShowAlertSnackbar } from '../../Redux/Slice/SidebarSlice';
+import { DecideConversation, ShowAlertSnackbar, FetchUserProfile } from '../../Redux/Slice/SidebarSlice';
 
 import { addNewDirectConversation, updateExistingDirectConversation, AddDirectMessage } from '../../Redux/Slice/Conversation';
 
@@ -23,7 +23,17 @@ const DashboardLayout = () => {
   // console.log("user->dash", user_id);
 
 
+  useEffect(
+    () => {
+      dispatch(FetchUserProfile());
+    }
+  )
+
+
+
   const { current_conversation } = useSelector((state) => state.conversation.direct_chat);
+
+
 
   useEffect(() => {
 
@@ -74,7 +84,7 @@ const DashboardLayout = () => {
 
 
 
-      socket.on("start_chat", (data) => { 
+      socket.on("start_chat", (data) => {
         console.log("Received conversation data:", data);
         console.log("Current conversation list:", conversationList);
 
