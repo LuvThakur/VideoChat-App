@@ -3,6 +3,11 @@ const filterObj = require("../Utils/FiltersObjFields");
 const FriendRequest = require("../Models/friendRequest");
 
 const catchAsync = require("../Utils/catchAsync");
+const AudioCall = require("../Models/audicallModel");
+const { Stream } = require("form-data");
+
+
+const { generatedToken11 } = require("./zegoAssistantServer");
 
 
 
@@ -177,3 +182,178 @@ exports.getRequests = async (req, res, next) => {
         });
     }
 };
+
+
+
+
+
+
+// Authorization and Authentication token generation
+
+
+exports.generateZegoToken = catchAsync(async (req, res, next) => {
+
+    try {
+        const { userID, room_id } = req.body;
+
+        console.log(userID, room_id, "from zego-Token");
+
+
+        const effectiveTimeInSeconds = 3600; // token expiration time, unit: second
+        const payloadObject = {
+
+            // The token generated in this example allows publishStream (push stream) action
+            room_id,  // The token generated allows loginRoom (login room) action
+
+            privilege: {
+                1: 1,
+                2: 1,
+
+
+            },
+            stream_id_list: null,
+
+        };
+
+
+        const payload = json.stringify(payloadObject);
+
+        // build token
+
+
+        const token = generatedToken11(
+
+
+            appID * 1,
+            userID,
+            serversecret,
+            effectiveTimeInSeconds,
+            payload
+        )
+
+        res.status(200).json({
+            status: "success",
+            message: "Token generated successfully",
+            token
+        })
+    }
+
+    catch (error) {
+        console.log(error)
+    }
+});
+
+
+// For Audio & Video
+
+
+exports.getCallLogs = catchAsync(async (req, res, next) => {
+
+    const user_id = req.user._id;
+
+    const call_logs = [];
+
+    const audio_calls = await AudioCall.find({
+        participants: { $all: [user_id] }
+    }).populate("from to");
+
+
+    console.log("audio-call==>>", audio_calls);
+
+
+    // Processing Audio Calls
+
+
+    for (let elm of audio_calls) {
+
+        const missed = elm.verdict !== 'Accepted';
+
+        // check if current user is caller
+        if (elm.from._id.toString() === user_id.toString()) {
+
+            // Sets the other participant as the receiver.
+            const other_user = elm.to;
+
+
+            // Adds the call details to call_logs as an outgoing call.
+
+            call_logs.push({
+                id: elm._id,
+                img: other_user.avatar,
+                name: other_user.firstname,
+                online: true,
+                incoming: false,
+                missed
+
+            })
+
+
+        }
+        // check if current user is receiver 
+
+        else {
+
+            //  Sets the other participant as the caller.
+            const other_user = elm.from;
+
+
+            // Adds the call details to call_logs as an incoming call.
+            call_logs.push({
+                id: elm._id,
+                img: other_user.avatar,
+                name: other_user.firstname,
+                online: true,
+                incoming: false,
+                missed
+            })
+        }
+
+    }
+
+
+    res.status(200).json({
+        status: "success",
+        message: "Call Logs Found successfully!",
+        data: call_logs
+    })
+
+
+});
+
+
+exports.startAudioCall = catchAsync(async (res, req, next) => {
+
+    const from = req.user._id;
+    const to = req.body._id;
+
+    const from_user = await User.findById(from);
+    const to_user = await User.findById(to);
+
+    // create a new  audio_call Doc and send require data to client 
+
+    const new_audio_Call = await AudioCall.create({
+
+        participants: [from, to],
+        from,
+        to,
+        status: "Ongoing"
+    });
+
+
+
+    res.status(200).json(
+        {
+
+            data: {
+                from: to_user,
+                roomID: new_audio_Call._id,
+                StreamID: to,
+                userID: from,
+                userName: from_user.firstname
+
+            },
+        }
+    )
+
+});
+

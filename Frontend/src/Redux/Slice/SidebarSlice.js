@@ -83,8 +83,10 @@ const SidebarSlice = createSlice({
 
     }
 });
+
 //  export action-creators
 export const { toggleSidebar, typeSidebar } = SidebarSlice.actions;
+
 // export reducers
 export default SidebarSlice.reducer;
 
