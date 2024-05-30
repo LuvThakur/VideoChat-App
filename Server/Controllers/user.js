@@ -10,6 +10,11 @@ const { Stream } = require("form-data");
 const { generatedToken11 } = require("./zegoAssistantServer");
 
 
+const appID = process.env.ZEGO_APP_ID;
+
+const serverSecret = process.env.ZEGO_SERVER_SECRET;
+
+
 
 //catchAsync Automatically catches any errors that occur within the async function and passes them to the next middleware.
 
@@ -226,7 +231,7 @@ exports.generateZegoToken = catchAsync(async (req, res, next) => {
 
             appID * 1,
             userID,
-            serversecret,
+            serverSecret,
             effectiveTimeInSeconds,
             payload
         )
@@ -321,10 +326,14 @@ exports.getCallLogs = catchAsync(async (req, res, next) => {
 });
 
 
-exports.startAudioCall = catchAsync(async (res, req, next) => {
+exports.startAudioCall = catchAsync(async (req, res, next) => {
+
+    console.log("from->", req.user, "to->", req.body);
 
     const from = req.user._id;
     const to = req.body._id;
+
+    console.log("from2->", from, "to2->", to);
 
     const from_user = await User.findById(from);
     const to_user = await User.findById(to);

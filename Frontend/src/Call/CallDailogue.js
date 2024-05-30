@@ -66,7 +66,7 @@ export default function CallDailogue({ open, handleClose }) {
                     }
                 </Stack>
             </DialogContent>
-
+            
         </Dialog>
     )
 }
