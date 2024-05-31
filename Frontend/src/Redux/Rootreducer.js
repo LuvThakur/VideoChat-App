@@ -3,6 +3,7 @@ import storage from "redux-persist/lib/storage";
 import Sidebarreducer from './Slice/SidebarSlice';
 import AuthReducer from './Slice/AuthSlice';
 import ConversationReducer from "./Slice/Conversation";
+import AudioCallReducer from "./Slice/AudioCall";
 
 // Configuration for Redux Persist
 const rootPersistConfig = {
@@ -16,7 +17,8 @@ const rootPersistConfig = {
 const rootReducer = combineReducers({
     appe: Sidebarreducer,
     auth: AuthReducer,
-    conversation: ConversationReducer
+    conversation: ConversationReducer,
+    audiocall:AudioCallReducer
 
 })
 

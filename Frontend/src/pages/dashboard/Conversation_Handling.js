@@ -3,7 +3,6 @@ import React, { useEffect, useRef } from "react";
 import { useTheme } from "@mui/material/styles";
 import { SimpleBarStyle } from "../../components/Scrollbar";
 
-import { ChatHeader, ChatFooter } from "../../components/Chat";
 
 import DasHeader from "../../components/Conversation/DasHeader";
 import DasFooter from "../../components/Conversation/DasFooter";

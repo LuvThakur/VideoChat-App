@@ -8,6 +8,8 @@ const initialState = {
     email: "",
     isLoading: false,
     error: false,
+    user:null,
+    user_id:null,
 }
 
 const AuthSlice = createSlice({

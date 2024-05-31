@@ -24,7 +24,7 @@ const ChatBox = ({ id, img, name, msg, time, unread, online }) => {
 
 
 
-    const isSelected = room_id === id;
+    let isSelected = room_id === id;
 
 
     if (!selectedChatId) {
