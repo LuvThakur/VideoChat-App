@@ -7,16 +7,17 @@ import {
   DialogContent,
   Slide,
   Stack,
+  Typography,
 } from "@mui/material";
 
 import { faker } from "@faker-js/faker";
+
 
 import { ZegoExpressEngine } from "zego-express-engine-webrtc";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 
 import instance from "../../../utils/axiosMethod";
-
 
 import { socket } from "../../../socket";
 
@@ -36,12 +37,14 @@ const CallDialogBox = ({ open, handleClose }) => {
   //* Use params from call_details if available => like in case of receiver's end
 
   const [call_details] = useSelector((state) => state.audiocall.call_queue);
-  const {incoming} = useSelector((state) => state.audioCall);
+  const { incoming } = useSelector((state) => state.audiocall);
 
   const { token } = useSelector((state) => state.auth);
 
-  const appID = 1192243909;
-  const server = "wss://webliveroom1192243909-api.coolzcloud.com/ws";
+  const appID = process.env.REACT_APP_APPID;
+  const server = process.env.REACT_APP_SERVER;
+
+
 
   // roomID => ID of conversation => current_conversation.id
   // token => generate on backend & get on App
@@ -52,12 +55,16 @@ const CallDialogBox = ({ open, handleClose }) => {
   const userID = call_details?.userID;
   const userName = call_details?.userName;
 
+  console.log("r->>>id", roomID, userID, userName);
+
   // Step 1
 
   // Initialize the ZegoExpressEngine instance
   const zg = new ZegoExpressEngine(appID, server);
 
-  const streamID = call_details?.streamID;
+  const streamID = call_details?.StreamID;
+
+  console.log("streamID->>", streamID);
 
   const handleDisconnect = (event, reason) => {
     if (reason && reason === "backdropClick") {
@@ -74,7 +81,7 @@ const CallDialogBox = ({ open, handleClose }) => {
       zg.stopPublishingStream(streamID);
       // stop playing a remote audio
       zg.stopPlayingStream(userID);
-      // destroy stream 
+      // destroy stream
       zg.destroyStream(audioStreamRef.current);
       // log out of the room
       zg.logoutRoom(roomID);
@@ -184,7 +191,7 @@ const CallDialogBox = ({ open, handleClose }) => {
               console.log(result);
 
               // After calling the CreateStream method, you need to wait for the ZEGOCLOUD server to return the local stream object before any further operation.
-             const localStream = await zg.createStream({
+              const localStream = await zg.createStream({
                 camera: { audio: true, video: false },
               });
 
@@ -243,7 +250,6 @@ const CallDialogBox = ({ open, handleClose }) => {
               JSON.stringify(userList)
             );
             if (updateType !== "ADD") {
-            
               handleDisconnect();
             } else {
               // const current_users = JSON.stringify(userList);
@@ -316,21 +322,25 @@ const CallDialogBox = ({ open, handleClose }) => {
         aria-describedby="alert-dialog-slide-description"
       >
         <DialogContent>
-          <Stack direction="row" spacing={24} p={2}>
-            <Stack>
+          <Stack>
+            <Stack direction="column" alignItems="center" spacing={2} p={3}>
               <Avatar
                 sx={{ height: 100, width: 100 }}
-                src={`https://${S3_BUCKET_NAME}.s3.${AWS_S3_REGION}.amazonaws.com/${call_details?.from_user?.avatar}`}
+                // src={`https://${S3_BUCKET_NAME}.s3.${AWS_S3_REGION}.amazonaws.com/${call_details?.from_user?.avatar}`}
               />
               <audio id="local-audio" controls={false} />
+
+              <Typography>{call_details.from.firstname}</Typography>
             </Stack>
-            <Stack>
+
+            {/* <Stack>
               <Avatar
                 sx={{ height: 100, width: 100 }}
-                src={`https://${S3_BUCKET_NAME}.s3.${AWS_S3_REGION}.amazonaws.com/${user?.avatar}`}
+                // src={`https://${S3_BUCKET_NAME}.s3.${AWS_S3_REGION}.amazonaws.com/${user?.avatar}`}
               />
               <audio id="remote-audio" controls={false} />
             </Stack>
+             */}
           </Stack>
         </DialogContent>
         <DialogActions>

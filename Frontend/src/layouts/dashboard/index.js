@@ -22,7 +22,6 @@ import {
 import AudioCallNotification from "../../Sections/dashboard/Audio/CallNotification";
 import AudioCallDialog from "../../Sections/dashboard/Audio/CallDialogBox";
 
-
 import {
   PushIntoAudioCallQueue,
   UpdateAudioCallBox,
@@ -55,8 +54,27 @@ const DashboardLayout = () => {
   );
 
   const { open_audio_notification_dialog, open_audio_dialog } = useSelector(
-    (state) => state.audioCall
+    (state) => state.audiocall
   );
+
+  console.log(
+    "open_audio_notification_dialog->",
+    open_audio_notification_dialog,
+    "open_audio_dialog-->",open_audio_dialog
+  );
+
+
+
+  const handleCloseAudioNotification = () => {
+    // Add appropriate logic here if needed
+
+    console.log("call -- handleclose-notifiatio -func");
+  };
+
+
+  const handleCloseAudioDialog = () => {
+    dispatch(UpdateAudioCallBox({ state: false }));
+  };
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -171,7 +189,7 @@ const DashboardLayout = () => {
       </Stack>
 
       {open_audio_notification_dialog && (
-        <AudioCallNotification open={open_audio_notification_dialog} />
+        <AudioCallNotification open={open_audio_notification_dialog} handleClose={handleCloseAudioNotification}/>
       )}
 
       {open_audio_dialog && (

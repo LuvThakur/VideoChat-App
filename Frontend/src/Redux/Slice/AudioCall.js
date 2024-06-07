@@ -22,14 +22,21 @@ const Slice = createSlice({
       if (state.call_queue.length === 0) {
         state.call_queue.push(action.payload.call);
 
+
+        console.log("action.payload.call-->",state.call_queue);
+
         if (action.payload.incoming) {
           state.open_audio_notification_dialog = true;
 
           state.incoming = true;
+          console.log("action.payload.call incom->",true);
         } else {
           state.open_audio_dialog = true;
 
           state.incoming = false;
+
+          console.log("action.payload.call oticomin->",state.open_audio_dialog);
+  
         }
       } else {
         // if queue is not empty then emit user_is_busy => in turn server will send this event to sender of call
@@ -51,6 +58,8 @@ const Slice = createSlice({
     upDateCallBox: (state, action) => {
       state.open_audio_dialog = action.payload.state;
       state.open_audio_notification_dialog = false;
+
+      console.log("updatecallbox-xy->",action.payload.state);
     },
   },
 });
@@ -58,12 +67,16 @@ const Slice = createSlice({
 export default Slice.reducer;
 
 export function StartAudioCall(id) {
+
+  console.log("id->who me want to talk->1",id);
+
   return async (dispatch, getState) => {
+
     dispatch(Slice.actions.resetAudioCallQueue());
 
     axios
       .post(
-        "user/start-audio-call",
+        "/user/start-audio-call",
         { id },
         {
           headers: {
@@ -80,9 +93,11 @@ export function StartAudioCall(id) {
             call: Response.data.data,
             incoming: false,
           })
-        ).catch((err) => {
-          console.log(err);
-        });
+        );
+
+      })
+      .catch((err) => {
+        console.log(err);
       });
   };
 }
@@ -106,6 +121,9 @@ export const CloseAudioNotificationDialog = () => {
 };
 
 export const UpdateAudioCallBox = ({ state }) => {
+
+
+  console.log("UpdateAudioCallBox->xy",state);
   return async (dispatch, getState) => {
     dispatch(Slice.actions.upDateCallBox({ state }));
   };
